@@ -1,0 +1,43 @@
+# PHP cache files
+*.php~
+*.swp
+*.swo
+
+# Composer dependencies
+vendor/
+
+# Composer lock file (if you want to track it, remove this line)
+composer.lock
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# Logs
+*.log
+logs/
+
+# IDE/Editor-specific files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+
+# Docker-related files
+docker-compose.override.yml
+docker-compose.dev.yml
+docker-compose.prod.yml
+
+# Docker volumes 
+data/

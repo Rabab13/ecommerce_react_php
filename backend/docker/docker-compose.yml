@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: ../
+      dockerfile: docker/apache/Dockerfile
+    ports:
+      - "8000:80"
+    environment:
+      - APACHE_RUN_USER=www-data
+      - APACHE_RUN_GROUP=www-data
+      - DB_HOST=db # Use the service name as the host
+      - DB_NAME=scandiweb_ecommerce
+      - DB_USER=root
+      - DB_PASSWORD=root
+    volumes:
+      - ../public:/var/www/html
+      - ../src:/var/www/src
+      - ../vendor:/var/www/vendor
+      - ../data:/var/www/html/data
+    depends_on:
+      - db
+
+  db:
+    image: mysql:5.6
+    container_name: mysql56
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: scandiweb_ecommerce
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:
