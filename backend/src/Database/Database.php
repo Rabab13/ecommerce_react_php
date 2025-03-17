@@ -1,6 +1,5 @@
 <?php
 // src/Database/Database.php
-
 namespace App\Database;
 
 use PDO;
@@ -17,6 +16,10 @@ class Database
             $dbname = getenv('DB_NAME');
             $username = getenv('DB_USER');
             $password = getenv('DB_PASSWORD');
+            error_log("DB_HOST: $host");
+            error_log("DB_NAME: $dbname");
+            error_log("DB_USER: $username");
+            error_log("DB_PASSWORD: $password");
 
             if (!$host || !$dbname || !$username || !$password) {
                   throw new \RuntimeException("Missing database configuration in environment variables.");

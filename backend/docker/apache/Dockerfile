@@ -1,5 +1,14 @@
 FROM php:8.1-apache
 
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+      apache2-utils \
+      unzip \
+      curl \
+      git \
+      && apt-get clean \
+      && rm -rf /var/lib/apt/lists/*
+
 # Install PHP extensions
 RUN docker-php-ext-install pdo pdo_mysql
 
@@ -7,14 +16,8 @@ RUN docker-php-ext-install pdo pdo_mysql
 RUN pecl install xdebug-3.1.5 \
       && docker-php-ext-enable xdebug
 
-# Install apache2-utils for a2enmod command
-RUN apt-get update && apt-get install -y apache2-utils
-
-# Enable rewrite module
-RUN a2enmod rewrite
-
-# Debug: List contents of the build context
-RUN ls -al /var/www
+# Enable Apache modules
+RUN a2enmod rewrite headers
 
 # Copy the Apache configuration files
 COPY ./docker/apache/000-default.conf /etc/apache2/sites-available/000-default.conf
@@ -23,16 +26,14 @@ COPY ./docker/apache/servername.conf /etc/apache2/conf-available/servername.conf
 # Enable the new configuration file
 RUN ln -s /etc/apache2/conf-available/servername.conf /etc/apache2/conf-enabled/servername.conf
 
-# Enable Apache modules
-RUN a2enmod headers
-
-# RUN a2enmod rewrite headers
-
-
 # Copy the application files
 COPY ./public /var/www/html
 COPY ./src /var/www/src
 COPY ./vendor /var/www/vendor
+
+# Set permissions for the application files
+RUN chown -R www-data:www-data /var/www/html \
+      && chmod -R 755 /var/www/html
 
 # Restart Apache
 RUN service apache2 restart

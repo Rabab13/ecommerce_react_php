@@ -10,15 +10,12 @@ services:
     environment:
       - APACHE_RUN_USER=www-data
       - APACHE_RUN_GROUP=www-data
-      - DB_HOST=db # Use the service name as the host
-      - DB_NAME=scandiweb_ecommerce
-      - DB_USER=root
-      - DB_PASSWORD=root
     volumes:
       - ../public:/var/www/html
       - ../src:/var/www/src
       - ../vendor:/var/www/vendor
       - ../data:/var/www/html/data
+      - ./.env:/var/www/html/.env
     depends_on:
       - db
 
