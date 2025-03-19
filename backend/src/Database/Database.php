@@ -12,19 +12,24 @@ class Database
 
       private function __construct()
       {
-            $host = getenv('DB_HOST');
-            $dbname = getenv('DB_NAME');
-            $username = getenv('DB_USER');
-            $password = getenv('DB_PASSWORD');
+            // Use $_ENV to access environment variables
+            $host = $_ENV['DB_HOST'] ?? null;
+            $dbname = $_ENV['DB_NAME'] ?? null;
+            $username = $_ENV['DB_USER'] ?? null;
+            $password = $_ENV['DB_PASSWORD'] ?? null;
+
+            // Log environment variables for debugging
             error_log("DB_HOST: $host");
             error_log("DB_NAME: $dbname");
             error_log("DB_USER: $username");
             error_log("DB_PASSWORD: $password");
 
+            // Validate environment variables
             if (!$host || !$dbname || !$username || !$password) {
                   throw new \RuntimeException("Missing database configuration in environment variables.");
             }
 
+            // Create PDO connection
             try {
                   $this->connection = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
                   $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

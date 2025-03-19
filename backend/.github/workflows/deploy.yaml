@@ -1,0 +1,22 @@
+name: Manual Seeder Trigger
+
+on:
+  workflow_dispatch: # Enables manual trigger
+
+jobs:
+  seed:
+    name: Run Seeder on GCR
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup SSH Key 🔐
+        uses: webfactory/ssh-agent@v0.8.1
+        with:
+          ssh-private-key: ${{ secrets.GCR_SSH_KEY }}
+
+      - name: Run Seeder Script on GCR 🚀
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.GCR_USER }}@${{ secrets.GCR_HOST }} "php /var/www/html/scripts/seed.php"

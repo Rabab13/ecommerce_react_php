@@ -5,14 +5,36 @@ use Dotenv\Dotenv;
 // Autoload dependencies first
 require_once __DIR__ . '/../vendor/autoload.php';
 
-$dotenv = Dotenv::createImmutable(__DIR__);
+$dotenv = Dotenv::createImmutable(__DIR__ . '/..');
 $dotenv->load();
 
-// CORS Headers for GraphQL (set at the beginning of the script)
-header("Access-Control-Allow-Origin: http://localhost:5173");
+
+$allowed_origins = [getenv('CORS_ORIGIN'), 'http://localhost:5173'];
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+
+if (in_array($origin, $allowed_origins, true)) {
+      header("Access-Control-Allow-Origin: $origin");
+      header("Access-Control-Allow-Credentials: true");
+} else {
+      // Optional: log disallowed origins for troubleshooting
+      error_log("Disallowed Origin: $origin");
+}
+
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
-header("Access-Control-Allow-Credentials: true");
+
+// Handle preflight request with headers set
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+      http_response_code(200);
+      exit();
+}
+
+
+// CORS Headers for GraphQL (set at the beginning of the script)
+// header("Access-Control-Allow-Origin: http://localhost:5173");
+// header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+// header("Access-Control-Allow-Headers: Content-Type, Authorization");
+// header("Access-Control-Allow-Credentials: true");
 
 // Handle preflight requests
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
