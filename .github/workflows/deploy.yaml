@@ -18,6 +18,5 @@ jobs:
           ssh-private-key: ${{ secrets.GCR_SSH_KEY }}
           log-public-key: true
 
-      - name: Run Seeder Script on GCR 🚀
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.GCR_USER }}@${{ secrets.GCR_HOST }} "php /var/www/html/scripts/seed.php"
+      - name: Debug SSH command 🔍
+  run: echo "Connecting to ${{ secrets.GCR_USER }}@${{ secrets.GCR_HOST }}"
