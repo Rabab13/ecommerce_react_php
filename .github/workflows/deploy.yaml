@@ -5,7 +5,7 @@ on:
 
 jobs:
   seed:
-    name: Run Seeder on GCR
+    name: Run Seeder on GCP
     runs-on: ubuntu-latest
 
     steps:
@@ -18,5 +18,9 @@ jobs:
           ssh-private-key: ${{ secrets.GCR_SSH_KEY }}
           log-public-key: true
 
-      - name: Debug SSH command
-  run: echo "Connecting to ${{ secrets.GCR_USER }}@${{ secrets.GCR_HOST }}"
+      - name: Debug SSH Connection Info 🐛
+        run: echo "Connecting to ${{ secrets.GCR_USER }}@${{ secrets.GCR_HOST }}"
+
+      - name: Run Seeder Script on GCP 🚀
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.GCR_USER }}@${{ secrets.GCR_HOST }} "php /var/www/project/backend/scripts/seed.php"
