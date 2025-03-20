@@ -11,7 +11,6 @@ jobs:
     steps:
       - name: Checkout repo 🛎️
         uses: actions/checkout@v3
-        run: ssh -vvv -o StrictHostKeyChecking=no ...
 
       - name: Setup SSH Agent 🔑
         uses: webfactory/ssh-agent@v0.7.0
@@ -22,9 +21,11 @@ jobs:
       - name: Debug SSH Connection Info 🐛
         run: echo "Connecting to ${{ secrets.GCR_USER }}@${{ secrets.GCR_HOST }}"
 
+      - name: SSH Connection Test (Verbose) 🔍
+        run: ssh -vvv -o StrictHostKeyChecking=no ${{ secrets.GCR_USER }}@${{ secrets.GCR_HOST }} "echo Connected successfully"
+
       - name: Run Seeder Script on GCP 🚀
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.GCR_USER }}@${{ secrets.GCR_HOST }} "php /var/www/project/backend/scripts/seed.php"
+        run: ssh -o StrictHostKeyChecking=no ${{ secrets.GCR_USER }}@${{ secrets.GCR_HOST }} "php /var/www/project/backend/scripts/seed.php"
 
       - name: Debug SSH Variables Again (Post-Run)
         run: echo "SSH to ${{ secrets.GCR_USER }}@${{ secrets.GCR_HOST }} completed."
