@@ -22,7 +22,7 @@ jobs:
         run: echo "Connecting to ${{ secrets.GCR_USER }}@${{ secrets.GCR_HOST }}"
 
       - name: SSH Connection Test (Verbose) 🔍
-  run: ssh -vvv -o StrictHostKeyChecking=no ${{ secrets.GCR_USER }}@${{ secrets.GCR_HOST }} "echo Connected successfully"
+        run: ssh -vvv -o StrictHostKeyChecking=no ${{ secrets.GCR_USER }}@${{ secrets.GCR_HOST }} "echo Connected successfully"
 
       - name: Run Seeder Script on GCP 🚀
         run: ssh -o StrictHostKeyChecking=no ${{ secrets.GCR_USER }}@${{ secrets.GCR_HOST }} "php /var/www/project/backend/scripts/seed.php"
