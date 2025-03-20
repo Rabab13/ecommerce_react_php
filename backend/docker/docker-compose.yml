@@ -2,23 +2,35 @@ version: '3.8'
 
 services:
   web:
+    mem_limit: 512m
+    cpus: 1
     build:
       context: ../
       dockerfile: docker/apache/Dockerfile
     ports:
-      - "8000:80"
+      - "8000:8080"
     environment:
+      - PHP_ERROR_REPORTING=E_ALL
+      - PHP_DISPLAY_ERRORS=On
+      - PHP_LOG_ERRORS=On
+      - PHP_ERROR_LOG=/var/log/php_errors.log
+      - DB_HOST=db
+      - DB_USER=root
+      - DB_PASS=root
+      - DB_NAME=scandiweb_ecommerce
       - APACHE_RUN_USER=www-data
       - APACHE_RUN_GROUP=www-data
-      - DB_HOST=db # Use the service name as the host
-      - DB_NAME=scandiweb_ecommerce
-      - DB_USER=root
-      - DB_PASSWORD=root
     volumes:
-      - ../public:/var/www/html
-      - ../src:/var/www/src
-      - ../vendor:/var/www/vendor
-      - ../data:/var/www/html/data
+    
+    - ../.env:/var/www/.env
+    - ../docker/php.ini:/usr/local/etc/php/conf.d/custom.ini
+    - ../public:/var/www/html/public
+    - ../src:/var/www/src
+    - ../vendor:/var/www/vendor
+    - ../data:/var/www/html/data
+    env_file:
+    - ../.env
+
     depends_on:
       - db
 
