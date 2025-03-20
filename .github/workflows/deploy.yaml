@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Setup SSH Key 🔐
-        uses: webfactory/ssh-agent@v0.7.1
+        uses: webfactory/ssh-agent@v0.7.0
         with:
           ssh-private-key: ${{ secrets.GCR_SSH_KEY }}
 
