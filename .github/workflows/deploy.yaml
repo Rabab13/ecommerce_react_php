@@ -1,7 +1,7 @@
 name: Manual Seeder Trigger
 
 on:
-  workflow_dispatch: # Enables manual trigger from GitHub UI
+  workflow_dispatch:
 
 jobs:
   seed:
@@ -18,19 +18,11 @@ jobs:
           ssh-private-key: ${{ secrets.GCR_SSH_KEY }}
           log-public-key: true
 
-      - name: Debug SSH Connection Info 🐛
-        run: |
-          echo "GCR_USER: ${{ secrets.GCR_USER }}"
-          echo "GCR_HOST: ${{ secrets.GCR_HOST }}"
+      - name: Print SSH Info 🐛
+        run: echo "Connecting as ${{ secrets.GCR_USER }} to ${{ secrets.GCR_HOST }}"
 
-      - name: SSH Connection Test (Verbose) 🔍
+      - name: SSH Connection Test 🔍
         run: ssh -vvv -o StrictHostKeyChecking=no ${{ secrets.GCR_USER }}@${{ secrets.GCR_HOST }} "echo Connected successfully"
 
-      - name: Run Seeder Script on GCP 🚀
+      - name: Run Seeder Script 🚀
         run: ssh -o StrictHostKeyChecking=no ${{ secrets.GCR_USER }}@${{ secrets.GCR_HOST }} "php /var/www/project/backend/scripts/seed.php"
-
-      - name: Debug SSH Variables Again (Post-Run)
-        run: echo "SSH to ${{ secrets.GCR_USER }}@${{ secrets.GCR_HOST }} completed."
-
-      - name: (Optional) Run Seeder via GCloud CLI 🛠️
-        run: gcloud compute ssh instance-20250320-084402 --zone=us-central1-c --command="php artisan db:seed"
