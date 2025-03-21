@@ -29,3 +29,6 @@ jobs:
 
       - name: Debug SSH Variables Again (Post-Run)
         run: echo "SSH to ${{ secrets.GCR_USER }}@${{ secrets.GCR_HOST }} completed."
+
+      - name: (Optional) Run Seeder via GCloud CLI 🛠️
+        run: gcloud compute ssh instance-20250320-084402 --zone=us-central1-c --command="php artisan db:seed"
