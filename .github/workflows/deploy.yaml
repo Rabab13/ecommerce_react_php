@@ -19,7 +19,9 @@ jobs:
           log-public-key: true
 
       - name: Debug SSH Connection Info 🐛
-        run: echo "Connecting to ${{ secrets.GCR_SSH_KEY }}@${{ secrets.GCR_HOST }}"
+        run: |
+          echo "GCR_USER: ${{ secrets.GCR_USER }}"
+          echo "GCR_HOST: ${{ secrets.GCR_HOST }}"
 
       - name: SSH Connection Test (Verbose) 🔍
         run: ssh -vvv -o StrictHostKeyChecking=no ${{ secrets.GCR_USER }}@${{ secrets.GCR_HOST }} "echo Connected successfully"
