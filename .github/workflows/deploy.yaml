@@ -10,7 +10,7 @@ env:
   PROJECT_ID: ecommerce-backend-454022
   IMAGE_NAME: ecommerce_react_php
   IMAGE_TAG: ${{ github.sha }}
-  REMOTE_USER: rababrain
+  REMOTE_USER: rababbrain
   REMOTE_HOST: 104.197.195.135
 
 jobs:
@@ -25,7 +25,8 @@ jobs:
 
       - name: Log in to GCR
         run: |
-          echo "${{ secrets.GCR_CREDENTIALS }}" | docker login -u _json_key --password-stdin https://${{ env.GCR_REGISTRY }}
+          echo "${{ secrets.GCR_CREDENTIALS }}" > keyfile.json
+          cat keyfile.json | docker login -u _json_key --password-stdin https://${{ env.GCR_REGISTRY }}
 
       - name: Build Docker Image
         run: |
@@ -45,3 +46,4 @@ jobs:
           ssh -o StrictHostKeyChecking=no ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }} "
             docker pull ${{ env.GCR_REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} &&
             docker run -d ${{ env.GCR_REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          "
