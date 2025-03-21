@@ -7,9 +7,9 @@ on:
 
 env:
   GCR_REGISTRY: gcr.io
-  PROJECT_ID:  ecommerce-backend-454022
-  IMAGE_NAME:  ${{ lower(github.repository) }} 
-  IMAGE_TAG:${{ github.sha }}
+  PROJECT_ID: ecommerce-backend-454022
+  IMAGE_NAME: ${{ lower(github.repository) }}
+  IMAGE_TAG: ${{ github.sha }}
   REMOTE_USER: rababrain
   REMOTE_HOST: 104.197.195.135
 
