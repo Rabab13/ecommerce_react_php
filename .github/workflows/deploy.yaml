@@ -18,14 +18,11 @@ jobs:
           ssh-private-key: ${{ secrets.GCR_SSH_KEY }}
           log-public-key: true
 
-      - name: Debug SSH Key
-        run: echo "${{ secrets.GCR_SSH_KEY }}" | ssh-keygen -l -f -
-
       - name: Print SSH Info 🐛
         run: echo "Connecting as ${{ secrets.GCR_USER }} to ${{ secrets.GCR_HOST }}"
 
-      - name: SSH Connection Test
-        run: ssh -vvv -o StrictHostKeyChecking=no -i ${{ secrets.GCR_SSH_KEY }} rababrain@104.197.195.135 "echo Connected successfully"
+      - name: SSH Connection Test 🔍
+        run: ssh -vvv -o StrictHostKeyChecking=no -i ${{ secrets.GCR_SSH_KEY }} ${{ secrets.GCR_USER }}@${{ secrets.GCR_HOST }} "echo Connected successfully"
 
       - name: Run Seeder Script
-        run: ssh -o StrictHostKeyChecking=no ${{ secrets.GCR_USER }}@${{ secrets.GCR_HOST }} "php /var/www/project/backend/scripts/seed.php"
+        run: ssh -o StrictHostKeyChecking=no -i ${{ secrets.GCR_SSH_KEY }} ${{ secrets.GCR_USER }}@${{ secrets.GCR_HOST }} "php /var/www/project/backend/scripts/seed.php"
