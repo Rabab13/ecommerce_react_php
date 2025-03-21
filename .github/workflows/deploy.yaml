@@ -24,5 +24,5 @@ jobs:
       - name: SSH Connection Test 🔍
         run: ssh -vvv -o StrictHostKeyChecking=no ${{ secrets.GCR_USER }}@${{ secrets.GCR_HOST }} "echo Connected successfully"
 
-      - name: Run Seeder Script 🚀
+      - name: Run Seeder Script
         run: ssh -o StrictHostKeyChecking=no ${{ secrets.GCR_USER }}@${{ secrets.GCR_HOST }} "php /var/www/project/backend/scripts/seed.php"
