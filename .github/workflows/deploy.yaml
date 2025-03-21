@@ -23,10 +23,20 @@ jobs:
       - name: Set up Docker
         uses: docker/setup-buildx-action@v2
 
-      - name: Log in to GCR
+      - name: Debug JSON Key
         run: |
-          echo "${{ secrets.GCR_CREDENTIALS }}" > keyfile.json
-          cat keyfile.json | docker login -u _json_key --password-stdin https://${{ env.GCR_REGISTRY }}
+          echo "GCR_CREDENTIALS: ${{ secrets.GCR_CREDENTIALS }}"
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+          service_account_key: ${{ secrets.GCR_CREDENTIALS }}
+          export_default_credentials: true
+
+      - name: Authenticate Docker with GCR
+        run: |
+          gcloud auth configure-docker
 
       - name: Build Docker Image
         run: |
