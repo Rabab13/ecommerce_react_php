@@ -3,7 +3,7 @@ name: Build and Deploy to GCR
 on:
   push:
     branches:
-      - main
+      - master
 
 env:
   GCR_REGISTRY: gcr.io
