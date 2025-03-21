@@ -18,9 +18,6 @@ jobs:
           ssh-private-key: ${{ secrets.GCR_SSH_KEY }}
           log-public-key: true
 
-      - name: Debug SSH Key
-        run: echo "${{ secrets.GCR_SSH_KEY }}" | ssh-keygen -y -f -
-
       - name: Print SSH Info 🐛
         run: echo "Connecting as ${{ secrets.GCR_USER }} to ${{ secrets.GCR_HOST }}"
 
