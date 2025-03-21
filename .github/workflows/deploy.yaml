@@ -11,7 +11,7 @@ env:
   IMAGE_NAME: ${{ lower(github.repository) }}
   IMAGE_TAG: ${{ github.sha }}
   REMOTE_USER: rababrain
-  REMOTE_HOST: 104.197.195.135
+  REMOTE_HOST: 104.197.195.13
 
 jobs:
   build-and-deploy:
