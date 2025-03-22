@@ -20,8 +20,9 @@ RUN docker-php-ext-install pdo pdo_mysql
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copy composer.json and composer.lock
-COPY ./composer.json ./composer.lock ./
+COPY ./composer.json ./
+# Skip the lock file
+# COPY ./composer.lock ./
 
 # Install dependencies
 RUN composer install --no-dev --optimize-autoloader
