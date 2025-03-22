@@ -54,6 +54,6 @@ jobs:
       - name: Deploy to Remote Server
         run: |
           ssh -o StrictHostKeyChecking=no ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }} "
-            docker pull ${{ env.GCR_REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} &&
-            docker run -d ${{ env.GCR_REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+            docker pull gcr.io/ecommerce-backend-454022/ecommerce-backend:v1 &&
+            docker run -d -p 8080:8000 gcr.io/ecommerce-backend-454022/ecommerce-backend:v1
           "
