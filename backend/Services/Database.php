@@ -39,7 +39,8 @@ class Database
             ]);
             error_log("[Database Connected] Successfully connected to DB.");
         } catch (PDOException $e) {
-            error_log("[Database Error] Connection failed: " . $e->getMessage());
+            error_log("[Database DSN] mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4");
+
             throw new \RuntimeException("Database connection failed: " . $e->getMessage());
         }
     }
