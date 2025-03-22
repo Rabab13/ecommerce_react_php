@@ -13,11 +13,12 @@ class Database
 
     private function __construct()
     {
-        $host = getenv('DB_HOST');
-        $port = getenv('DB_PORT');
-        $dbname = getenv('DB_NAME');
-        $username = getenv('DB_USER');
-        $password = getenv('DB_PASSWORD');
+        $host = getenv('MYSQL_HOST');
+        $port = getenv('MYSQL_PORT');
+        $dbname = getenv('MYSQL_DATABASE');
+        $username = getenv('MYSQL_USER');
+        $password = getenv('MYSQL_PASSWORD');
+
 
         // Log to help diagnose in Railway Logs
         error_log("[Database Init] Host: $host | Port: $port | DB: $dbname | User: $username");
