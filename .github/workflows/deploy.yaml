@@ -32,13 +32,14 @@ jobs:
 
       - name: Authenticate Docker with GCR
         run: |
-          gcloud auth configure-docker
+          echo "${{ secrets.GCR_CREDENTIALS }}" | docker login -u _json_key --password-stdin https://${{ env.GCR_REGISTRY }}
 
       - name: Build Docker Image
         run: |
           docker build -f backend/docker/apache/Dockerfile \
             -t ${{ env.GCR_REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} \
             backend
+
       - name: Push Docker Image to GCR
         run: |
           docker push ${{ env.GCR_REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
