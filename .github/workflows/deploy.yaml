@@ -36,8 +36,9 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t ${{ env.GCR_REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} ./backend/docker/apache
-
+          docker build -f backend/docker/apache/Dockerfile \
+            -t ${{ env.GCR_REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} \
+            backend
       - name: Push Docker Image to GCR
         run: |
           docker push ${{ env.GCR_REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
