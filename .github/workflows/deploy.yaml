@@ -1,4 +1,4 @@
-name: Build and Deploy to GCR
+name: Build and Deploy Backend to GCR
 
 on:
   push:
@@ -14,7 +14,7 @@ env:
   REMOTE_HOST: 104.197.195.135
 
 jobs:
-  build-and-deploy:
+  build-and-deploy-backend:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -23,24 +23,18 @@ jobs:
       - name: Set up Docker
         uses: docker/setup-buildx-action@v2
 
-      - name: Debug JSON Key
+      - name: Debug Repository Structure
         run: |
-          echo "GCR_CREDENTIALS: ${{ secrets.GCR_CREDENTIALS }}"
+          ls -R
 
-      - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v1
-        with:
-          project_id: ${{ env.PROJECT_ID }}
-          service_account_key: ${{ secrets.GCR_CREDENTIALS }}
-          export_default_credentials: true
-
-      - name: Authenticate Docker with GCR
+      - name: Log in to GCR
         run: |
-          gcloud auth configure-docker
+          echo "${{ secrets.GCR_CREDENTIALS }}" > keyfile.json
+          cat keyfile.json | docker login -u _json_key --password-stdin https://${{ env.GCR_REGISTRY }}
 
-      - name: Build Docker Image
+      - name: Build Docker Image for Backend
         run: |
-          docker build -t ${{ env.GCR_REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} .
+          docker build -t ${{ env.GCR_REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} ./backend/docker/apache
 
       - name: Push Docker Image to GCR
         run: |
@@ -51,7 +45,7 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Deploy to Remote Server
+      - name: Deploy Backend to Remote Server
         run: |
           ssh -o StrictHostKeyChecking=no ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }} "
             docker pull ${{ env.GCR_REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} &&
