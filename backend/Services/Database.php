@@ -13,8 +13,8 @@ class Database
 
     private function __construct()
     {
-        $host = getenv('DB_HOST') ?: 'localhost';
-        $port = getenv('DB_PORT') ?: '3306';
+        $host = getenv('DB_HOST');
+        $port = getenv('DB_PORT');
         $dbname = getenv('DB_NAME');
         $username = getenv('DB_USER');
         $password = getenv('DB_PASSWORD');

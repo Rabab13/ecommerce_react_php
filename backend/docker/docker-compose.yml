@@ -23,7 +23,6 @@ services:
     volumes:
     
     - ../.env:/var/www/.env
-    - ../docker/php.ini:/usr/local/etc/php/conf.d/custom.ini
     - ../public:/var/www/html/public
     - ../src:/var/www/src
     - ../vendor:/var/www/vendor

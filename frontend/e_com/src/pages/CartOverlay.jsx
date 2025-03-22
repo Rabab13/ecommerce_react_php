@@ -202,7 +202,8 @@ const CartOverlay = ({
             cartItems.length === 0
               ? 'bg-gray-300 cursor-not-allowed'
               : 'bg-green-500 text-white hover:bg-green-600'
-          }`}
+            }`}
+            data-testid="place-order-button" 
         >
           PLACE ORDER
         </button>

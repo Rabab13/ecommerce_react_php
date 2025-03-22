@@ -5,44 +5,38 @@ use Dotenv\Dotenv;
 // Autoload dependencies first
 require_once __DIR__ . '/../vendor/autoload.php';
 
+// Load .env config
 $dotenv = Dotenv::createImmutable(__DIR__ . '/..');
 $dotenv->load();
 
-
-$allowed_origins = [getenv('CORS_ORIGIN'), 'http://localhost:5173'];
+// Handle CORS
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+$allowed_origins = [
+      getenv('CORS_ORIGIN'),           // From .env
+      'http://localhost:5173',         // Local dev server
+];
 
-if (in_array($origin, $allowed_origins, true)) {
+// Allow any *.ngrok-free.app domain dynamically
+$allow_ngrok = preg_match('/^https:\/\/[a-z0-9\-]+\.ngrok-free\.app$/', $origin);
+
+if (in_array($origin, $allowed_origins, true) || $allow_ngrok) {
       header("Access-Control-Allow-Origin: $origin");
       header("Access-Control-Allow-Credentials: true");
 } else {
-      // Optional: log disallowed origins for troubleshooting
       error_log("Disallowed Origin: $origin");
 }
 
+// Required headers
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
-// Handle preflight request with headers set
+// Handle preflight request
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
       http_response_code(200);
       exit();
 }
 
-
-// CORS Headers for GraphQL (set at the beginning of the script)
-// header("Access-Control-Allow-Origin: http://localhost:5173");
-// header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-// header("Access-Control-Allow-Headers: Content-Type, Authorization");
-// header("Access-Control-Allow-Credentials: true");
-
-// Handle preflight requests
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-      http_response_code(200);
-      exit();
-}
-
-// App dependencies
+// Load App Dependencies
 require_once __DIR__ . '/../src/Database/Database.php';
 require_once __DIR__ . '/../src/GraphQL/Schema.php';
 
@@ -50,13 +44,13 @@ use App\Database\Database;
 use App\GraphQL\Schema;
 use GraphQL\GraphQL;
 
-// Get the DB connection (Singleton pattern)
+// Get DB connection (Singleton)
 $db = Database::getInstance()->getConnection();
 
 // Create GraphQL schema
 $schema = Schema::create($db);
 
-// Handle the request
+// Read GraphQL request
 $rawInput = file_get_contents('php://input');
 $input = json_decode($rawInput, true);
 
@@ -83,8 +77,9 @@ try {
       ];
 }
 
+// Output JSON response
 header('Content-Type: application/json');
 echo json_encode($output);
 
-// Optional: Close DB connection
+// Close DB connection (optional)
 $db = null;
