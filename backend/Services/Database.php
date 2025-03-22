@@ -20,8 +20,10 @@ class Database
         $password = getenv('MYSQL_PASSWORD');
 
 
-        // Log to help diagnose in Railway Logs
-        error_log("[Database Init] Host: $host | Port: $port | DB: $dbname | User: $username");
+        if (!$host || !$port || !$dbname || !$username || !$password) {
+            error_log("[ENV VAR DEBUG] Host: $host | Port: $port | DB: $dbname | User: $username | Password: " . ($password ? "Set" : "Empty"));
+            throw new \RuntimeException("Missing database configuration in environment variables.");
+        }
 
         if (!$dbname || !$username || !$password) {
             error_log("[Database Error] Missing critical ENV vars.");
