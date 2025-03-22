@@ -5,7 +5,7 @@ FROM composer:latest AS build
 WORKDIR /app
 
 # Copy composer.json and composer.lock
-COPY ./composer.json ./composer.lock ./
+COPY . .
 
 # Install dependencies
 RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
