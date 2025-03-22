@@ -8,8 +8,8 @@ on:
 env:
   GCR_REGISTRY: gcr.io
   PROJECT_ID: ecommerce-backend-454022
-  IMAGE_NAME: ecommerce_react_php
-  IMAGE_TAG: ${{ github.sha }}
+  IMAGE_NAME: ecommerce-backend
+  IMAGE_TAG: v1
   REMOTE_USER: rababbrain
   REMOTE_HOST: 104.197.195.135
 
@@ -22,10 +22,6 @@ jobs:
 
       - name: Set up Docker
         uses: docker/setup-buildx-action@v2
-
-      - name: Debug JSON Key
-        run: |
-          echo "GCR_CREDENTIALS: ${{ secrets.GCR_CREDENTIALS }}"
 
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
@@ -54,6 +50,8 @@ jobs:
       - name: Deploy to Remote Server
         run: |
           ssh -o StrictHostKeyChecking=no ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }} "
-            docker pull gcr.io/ecommerce-backend-454022/ecommerce-backend:v1 &&
-            docker run -d -p 8080:8000 gcr.io/ecommerce-backend-454022/ecommerce-backend:v1
+            docker pull ${{ env.GCR_REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} &&
+            docker stop ecommerce-backend || true &&
+            docker rm ecommerce-backend || true &&
+            docker run -d --name ecommerce-backend -p 8080:8000 ${{ env.GCR_REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
           "
