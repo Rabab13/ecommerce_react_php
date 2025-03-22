@@ -1,6 +1,6 @@
 {
       "build": {
-        "dockerfilePath": "backend/apache/Dockerfile"
+        "dockerfilePath": "docker/apache/Dockerfile"
       }
     }
     
