@@ -13,7 +13,7 @@ class Database
 
     private function __construct()
     {
-        $host = getenv('MYSQL_HOST');
+        $host = getenv('DB_HOST_OVERRIDE') ?: getenv('DB_HOST');
         $port = getenv('MYSQL_PORT');
         $dbname = getenv('MYSQL_DATABASE');
         $username = getenv('MYSQL_USER');
