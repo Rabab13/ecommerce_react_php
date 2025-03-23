@@ -13,8 +13,8 @@ $dotenv->load();
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
 $allowed_origins = [
       'https://rococo-puppy-56bad8.netlify.app', // Your Netlify frontend URL
-      'http://localhost:5173',         // Local dev server
-      'https://*.netlify.app',         // Allow all Netlify preview URLs
+      'http://localhost:5173',                  // Local dev server
+      'https://*.netlify.app',                  // Allow all Netlify preview URLs
 ];
 
 // Allow any *.netlify.app domain dynamically
@@ -25,6 +25,8 @@ if (in_array($origin, $allowed_origins, true) || $allow_netlify) {
       header("Access-Control-Allow-Credentials: true");
 } else {
       error_log("Disallowed Origin: $origin");
+      http_response_code(403); // Forbidden
+      exit;
 }
 
 // Required headers
@@ -69,6 +71,7 @@ if (empty($query)) {
 }
 
 // Execute GraphQL query
+$variableValues = $input['variables'] ?? [];
 try {
       $result = GraphQL::executeQuery($schema, $query, null, null, $variableValues);
       $output = $result->toArray();
