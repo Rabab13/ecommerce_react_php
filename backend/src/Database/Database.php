@@ -21,12 +21,12 @@ class Database
             $password = getenv('MYSQL_PASSWORD');
             $url = getenv('MYSQL_URL');
 
-            // // Debugging: Print variables
-            echo 'MYSQL_HOST: ' . $host . '<br>';
-            echo 'MYSQL_USER: ' . $username . '<br>';
-            echo 'MYSQL_PASSWORD: ' . ($password ? 'Set' : 'Empty') . '<br>';
-            echo 'MYSQL_DATABASE: ' . $dbname . '<br>';
-            echo 'MYSQL_URL: ' . $url . '<br>';
+
+            // echo 'MYSQL_HOST: ' . $host . '<br>';
+            // echo 'MYSQL_USER: ' . $username . '<br>';
+            // echo 'MYSQL_PASSWORD: ' . ($password ? 'Set' : 'Empty') . '<br>';
+            // echo 'MYSQL_DATABASE: ' . $dbname . '<br>';
+            // echo 'MYSQL_URL: ' . $url . '<br>';
 
             // Validate required environment variables
             if (!$host || !$port || !$dbname || !$username || !$password) {
