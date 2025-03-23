@@ -17,7 +17,7 @@ services:
       - MYSQL_HOST:mysql-qgkp.railway.internal
       - MYSQL_PORT:3306
       - MYSQL_DATABASE:railway
-      - MYSQL_USER=root
+      - MYSQL_USER:root
       - MYSQL_PASSWORD:hhyqaXpUrzJMBHhoCEddogCNnnaoICJB
     volumes:
     
