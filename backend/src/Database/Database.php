@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Database;
 
 use PDO;
@@ -19,8 +18,8 @@ class Database
             $dbname = getenv('MYSQL_DATABASE');
             $username = getenv('MYSQL_USER');
             $password = getenv('MYSQL_PASSWORD');
-            $url = getenv('MYSQL_URL');
 
+            // Validate required environment variables
             if (!$host || !$port || !$dbname || !$username || !$password) {
                   throw new \RuntimeException("Missing database configuration in environment variables.");
             }
@@ -34,9 +33,10 @@ class Database
                         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                   ]);
-                  echo 'Database connected successfully!';
+                  // Log success message to the server log
+                  error_log('Database connected successfully!');
             } catch (PDOException $e) {
-                  echo 'Database connection failed: ' . $e->getMessage();
+                  throw new \RuntimeException('Database connection failed: ' . $e->getMessage());
             }
       }
 
