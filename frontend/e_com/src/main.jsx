@@ -8,7 +8,7 @@ import App from './App';
 import './index.css';
 
 const client = new ApolloClient({
-  uri: 'http://localhost:8000/graphql', // Replace with your endpoint
+  uri: 'https://ecommercereactphp-production.up.railway.app/graphql', // Replace with your endpoint
   cache: new InMemoryCache(),
 });
 
