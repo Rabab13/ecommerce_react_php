@@ -54,13 +54,13 @@ $schema = Schema::create($db);
 
 // Read GraphQL request
 $rawInput = file_get_contents('php://input');
+error_log("Raw Input: " . $rawInput); // Debug the raw input
+
 $input = json_decode($rawInput, true);
+error_log("Parsed Input: " . print_r($input, true)); // Debug the parsed input
 
 $query = $input['query'] ?? null;
-$variableValues = $input['variables'] ?? null;
-
-// Debug the query
-error_log("GraphQL Query: " . ($query ?? 'NULL'));
+error_log("GraphQL Query: " . ($query ?? 'NULL')); // Debug the query
 
 // Validate the query
 if (empty($query)) {
