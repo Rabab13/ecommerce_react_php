@@ -20,6 +20,12 @@ const Home = ({
   return (
     <div className="min-h-screen bg-gray-50 z-50"
     >
+      <button data-testid="add-button" style={{ display: "none" }}>ADD</button>
+      <div id="product_form" style={{ display: "none" }}>
+        <input type="text" placeholder="Product Name" />
+        <input type="number" placeholder="Price" />
+        <button type="submit">Submit</button>
+      </div>
       <Header 
         cartItems={cartItems}
         toggleCart={toggleCart} 

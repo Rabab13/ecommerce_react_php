@@ -176,6 +176,7 @@ const ProductDetails = ({ onAddToCart, setActiveCategory, products }) => {
             style={{ textTransform: 'uppercase' }}
             data-testid="add-to-cart"
           >
+          
             {!selectedProduct.inStock ? 'Out of Stock' : 'Add to Cart'}
           </button>
 
