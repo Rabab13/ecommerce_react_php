@@ -21,12 +21,14 @@ class Database
             $password = getenv('MYSQL_PASSWORD');
             $url = getenv('MYSQL_URL');
 
-            // Debug logging to verify environment variables
-            echo 'MYSQL_HOST: ' . getenv('MYSQL_HOST') . PHP_EOL;
-            echo 'MYSQL_USER: ' . getenv('MYSQL_USER') . PHP_EOL;
-            echo 'MYSQL_PASSWORD: ' . getenv('MYSQL_PASSWORD') . PHP_EOL;
-            echo 'MYSQL_DATABASE: ' . getenv('MYSQL_DATABASE') . PHP_EOL;
-            echo 'MYSQL_URL: ' . getenv('MYSQL_URL') . PHP_EOL;
+
+            // Debugging: Print environment variables
+            echo 'MYSQL_HOST: ' . getenv('MYSQL_HOST') . '<br>';
+            echo 'MYSQL_USER: ' . getenv('MYSQL_USER') . '<br>';
+            echo 'MYSQL_PASSWORD: ' . getenv('MYSQL_PASSWORD') . '<br>';
+            echo 'MYSQL_DATABASE: ' . getenv('MYSQL_DATABASE') . '<br>';
+            echo 'MYSQL_URL: ' . getenv('MYSQL_URL') . '<br>';
+
 
             // Validate required environment variables
             if (!$host || !$port || !$dbname || !$username || !$password) {
@@ -43,7 +45,6 @@ class Database
                   $this->connection = new PDO($dsn, $username, $password, [
                         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, // Enable exceptions for errors
                         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, // Set default fetch mode to associative array
-                        PDO::ATTR_TIMEOUT => 10 // Set connection timeout to 10 seconds
                   ]);
                   error_log("[Database Connected] Successfully connected to DB.");
             } catch (PDOException $e) {
