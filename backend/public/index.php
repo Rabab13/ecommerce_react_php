@@ -14,7 +14,7 @@ $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
 $allowed_origins = [
       getenv('CORS_ORIGIN'),           // From .env
       'http://localhost:5173',         // Local dev server
-      'https://rococo-puppy-56bad8.netlify.app/', // Your Netlify frontend URL
+      'https://rococo-puppy-56bad8.netlify.app', // Your Netlify frontend URL
       'https://*.netlify.app',         // Allow all Netlify preview URLs
 ];
 
@@ -59,7 +59,15 @@ $input = json_decode($rawInput, true);
 $query = $input['query'] ?? null;
 $variableValues = $input['variables'] ?? null;
 
-error_log("GraphQL Query: " . $query);
+// Debug the query
+error_log("GraphQL Query: " . ($query ?? 'NULL'));
+
+// Validate the query
+if (empty($query)) {
+      http_response_code(400); // Bad Request
+      echo json_encode(['error' => 'No GraphQL query provided']);
+      exit;
+}
 
 // Execute GraphQL query
 try {
