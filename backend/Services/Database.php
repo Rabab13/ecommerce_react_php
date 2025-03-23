@@ -36,8 +36,8 @@ class Database
         try {
             $this->connection = new PDO($dsn, $username, $password, [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::ATTR_TIMEOUT => 10
             ]);
             error_log("[Database Connected] Successfully connected to DB.");
         } catch (PDOException $e) {
