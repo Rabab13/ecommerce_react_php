@@ -13,11 +13,17 @@ class Database
 
     private function __construct()
     {
-        $host = getenv('DB_HOST_OVERRIDE') ?: getenv('DB_HOST');
+        $host = getenv('MYSQL_HOST_OVERRIDE') ?: getenv('MYSQL_HOST');
         $port = getenv('MYSQL_PORT');
         $dbname = getenv('MYSQL_DATABASE');
         $username = getenv('MYSQL_USER');
         $password = getenv('MYSQL_PASSWORD');
+
+        error_log("[DEBUG] MYSQL_HOST: " . getenv('MYSQL_HOST'));
+        error_log("[DEBUG] MYSQL_PORT: " . getenv('MYSQL_PORT'));
+        error_log("[DEBUG] MYSQL_DATABASE: " . getenv('MYSQL_DATABASE'));
+        error_log("[DEBUG] MYSQL_USER: " . getenv('MYSQL_USER'));
+        error_log("[DEBUG] MYSQL_PASSWORD: " . (getenv('MYSQL_PASSWORD') ? "Set" : "Empty"));
 
 
         if (!$host || !$port || !$dbname || !$username || !$password) {
