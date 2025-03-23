@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Database;
 
 use PDO;
@@ -13,22 +12,31 @@ class Database
 
       private function __construct()
       {
-            // Fetch environment variables
+            // Fetch individual environment variables
             $host = getenv('MYSQL_HOST');
             $port = getenv('MYSQL_PORT');
             $dbname = getenv('MYSQL_DATABASE');
             $username = getenv('MYSQL_USER');
             $password = getenv('MYSQL_PASSWORD');
-            $url = getenv('MYSQL_URL');
 
-            // Debugging: Print variables
-            // echo 'MYSQL_HOST: ' . $host . '<br>';
-            // echo 'MYSQL_USER: ' . $username . '<br>';
-            // echo 'MYSQL_PASSWORD: ' . ($password ? 'Set' : 'Empty') . '<br>';
-            // echo 'MYSQL_DATABASE: ' . $dbname . '<br>';
-            // echo 'MYSQL_URL: ' . $url . '<br>';
+            // If individual variables are not set, try parsing MYSQL_VAR
+            if (!$host || !$port || !$dbname || !$username || !$password) {
+                  $mysqlUrl = getenv('MYSQL_VAR');
 
-            // Validate required environment variables
+                  if ($mysqlUrl) {
+                        // Parse the MySQL URL
+                        $parsedUrl = parse_url($mysqlUrl);
+
+                        // Extract connection details from the URL
+                        $host = $parsedUrl['host'] ?? $host;
+                        $port = $parsedUrl['port'] ?? $port;
+                        $dbname = ltrim($parsedUrl['path'] ?? '', '/'); // Remove leading slash
+                        $username = $parsedUrl['user'] ?? $username;
+                        $password = $parsedUrl['pass'] ?? $password;
+                  }
+            }
+
+            // Validate required connection details
             if (!$host || !$port || !$dbname || !$username || !$password) {
                   throw new \RuntimeException("Missing database configuration in environment variables.");
             }

@@ -14,11 +14,11 @@ services:
       - PHP_DISPLAY_ERRORS=On
       - PHP_LOG_ERRORS=On
       - PHP_ERROR_LOG=/var/log/php_errors.log
-      - MYSQL_HOST=mysql.railway.internal
+      - MYSQL_HOST=mysql-qgkp.railway.internal
       - MYSQL_PORT=3306
       - MYSQL_DATABASE=railway
       - MYSQL_USER=root
-      - MYSQL_PASSWORD=uGTelUjjqNeapXBKrIHbGbzwOgsXtmya
+      - MYSQL_PASSWORD=hhyqaXpUrzJMBHhoCEddogCNnnaoICJB
       - APACHE_RUN_USER=www-data
       - APACHE_RUN_GROUP=www-data
     volumes:
