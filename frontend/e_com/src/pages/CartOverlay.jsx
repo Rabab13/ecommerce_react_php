@@ -139,7 +139,7 @@ const CartOverlay = ({
                                   backgroundColor: attribute.name === 'Color' ? itemValue.value : 'bg-black',
                                   color: isSelected && attribute.name !== 'Color' ? 'white' : 'black',
                                 }}
-                                data-testid={`cart-item-attribute-${attributeNameKebabCase}-${itemValueKebabCase}${
+                                data-testid={`product-attribute-${attributeNameKebabCase}-${itemValueKebabCase}${
                                   isSelected ? '-selected' : ''
                                 }`}
                               >
