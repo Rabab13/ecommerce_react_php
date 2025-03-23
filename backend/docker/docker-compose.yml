@@ -19,6 +19,7 @@ services:
       - MYSQL_DATABASE=railway
       - MYSQL_USER=root
       - MYSQL_PASSWORD=hhyqaXpUrzJMBHhoCEddogCNnnaoICJB
+      - MYSQL_VAR=mysql://root:hhyqaXpUrzJMBHhoCEddogCNnnaoICJB@mysql-qgkp.railway.internal:3306/railway
       - APACHE_RUN_USER=www-data
       - APACHE_RUN_GROUP=www-data
     volumes:

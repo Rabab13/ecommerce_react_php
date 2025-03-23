@@ -2,6 +2,12 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
+// Debug: Check if .env file exists
+$envFilePath = __DIR__ . '/../.env';
+if (!file_exists($envFilePath)) {
+      die('.env file not found at: ' . $envFilePath);
+}
+
 // Load environment variables from .env file
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
 $dotenv->load();
