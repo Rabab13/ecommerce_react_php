@@ -9,12 +9,11 @@ export default defineConfig({
     port: 5173,         // Force Vite to use port 5173
     strictPort: true,   // Fail if port 5173 is not available
     proxy: {
-      '/graphql': {
-        target: 'http://localhost:8000', // Ensure this matches your backend URL
+      '/graphql.php': {
+        target: 'https://ecommercereactphp-production.up.railway.app', // Ensure this matches your backend URL
         changeOrigin: true,
         secure: false,
       },
     },
-    allowedHosts: ['416b-196-134-194-253.ngrok-free.app'],  // <-- Add your ngrok domain here
   },
 });

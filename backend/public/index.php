@@ -14,12 +14,14 @@ $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
 $allowed_origins = [
       getenv('CORS_ORIGIN'),           // From .env
       'http://localhost:5173',         // Local dev server
+      'https://your-netlify-site.netlify.app', // Your Netlify frontend URL
+      'https://*.netlify.app',         // Allow all Netlify preview URLs
 ];
 
-// Allow any *.ngrok-free.app domain dynamically
-$allow_ngrok = preg_match('/^https:\/\/[a-z0-9\-]+\.ngrok-free\.app$/', $origin);
+// Allow any *.netlify.app domain dynamically
+$allow_netlify = preg_match('/^https:\/\/[a-z0-9\-]+\.netlify\.app$/', $origin);
 
-if (in_array($origin, $allowed_origins, true) || $allow_ngrok) {
+if (in_array($origin, $allowed_origins, true) || $allow_netlify) {
       header("Access-Control-Allow-Origin: $origin");
       header("Access-Control-Allow-Credentials: true");
 } else {
