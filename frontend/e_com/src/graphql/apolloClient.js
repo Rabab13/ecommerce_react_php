@@ -3,7 +3,7 @@ import { setContext } from '@apollo/client/link/context';
 
 const httpLink = createHttpLink({
   // uri: 'http://localhost:8000/graphql',
-  uri: 'https://ecommercereactphp-production.up.railway.app/',
+  uri: 'https://ecommercereactphp-production.up.railway.app/graphql',
   credentials: 'include',
 });
 

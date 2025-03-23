@@ -10,7 +10,7 @@ export default defineConfig({
     strictPort: true,   // Fail if port 5173 is not available
     proxy: {
       '/graphql.php': {
-        target: 'https://ecommercereactphp-production.up.railway.app', // Ensure this matches your backend URL
+        target: 'https://ecommercereactphp-production.up.railway.app/graphql', // Ensure this matches your backend URL
         changeOrigin: true,
         secure: false,
       },
