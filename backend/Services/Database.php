@@ -31,15 +31,18 @@ class Database
         }
 
         $dsn = "mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4";
+        error_log("[DEBUG] ENV - Host: $host | Port: $port | DB: $dbname | User: $username | Pass: " . ($password ? "Set" : "Empty"));
 
         try {
             $this->connection = new PDO($dsn, $username, $password, [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             ]);
             error_log("[Database Connected] Successfully connected to DB.");
         } catch (PDOException $e) {
             error_log("[Database DSN] mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4");
+            error_log("[PDO ERROR] " . $e->getMessage());
 
             throw new \RuntimeException("Database connection failed: " . $e->getMessage());
         }
