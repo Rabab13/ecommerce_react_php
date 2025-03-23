@@ -22,11 +22,11 @@ class Database
             $url = getenv('MYSQL_URL');
 
             // Debug logging to verify environment variables
-            error_log("[DEBUG] MYSQL_HOST: " . getenv('MYSQL_HOST'));
-            error_log("[DEBUG] MYSQL_PORT: " . getenv('MYSQL_PORT'));
-            error_log("[DEBUG] MYSQL_DATABASE: " . getenv('MYSQL_DATABASE'));
-            error_log("[DEBUG] MYSQL_USER: " . getenv('MYSQL_USER'));
-            error_log("[DEBUG] MYSQL_PASSWORD: " . (getenv('MYSQL_PASSWORD') ? "Set" : "Empty"));
+            echo 'MYSQL_HOST: ' . getenv('MYSQL_HOST') . PHP_EOL;
+            echo 'MYSQL_USER: ' . getenv('MYSQL_USER') . PHP_EOL;
+            echo 'MYSQL_PASSWORD: ' . getenv('MYSQL_PASSWORD') . PHP_EOL;
+            echo 'MYSQL_DATABASE: ' . getenv('MYSQL_DATABASE') . PHP_EOL;
+            echo 'MYSQL_URL: ' . getenv('MYSQL_URL') . PHP_EOL;
 
             // Validate required environment variables
             if (!$host || !$port || !$dbname || !$username || !$password) {
