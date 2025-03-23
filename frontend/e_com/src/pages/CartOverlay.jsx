@@ -92,7 +92,7 @@ const CartOverlay = ({
   }, [onClose]);
 
   return (
-    <div className="absolute top-14 right-56 w-80 bg-white p-2 pt-9 shadow-xl z-100 font-raleway" ref={cartOverlayRef}>
+    <div   data-testid="cart-overlay" className="absolute top-14 right-56 w-80 bg-white p-2 pt-9 shadow-xl z-100 font-raleway" ref={cartOverlayRef}>
       <div className="flex justify-between items-center mb-10">
         <h2 className="text-xl font-bold">My Bag, {totalItems === 0 ? '0 Items' : totalItems === 1 ? '1 Item' : `X Items`}
         </h2>
