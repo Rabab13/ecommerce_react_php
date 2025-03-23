@@ -14,7 +14,7 @@ $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
 $allowed_origins = [
       getenv('CORS_ORIGIN'),           // From .env
       'http://localhost:5173',         // Local dev server
-      'https://your-netlify-site.netlify.app', // Your Netlify frontend URL
+      'https://rococo-puppy-56bad8.netlify.app/', // Your Netlify frontend URL
       'https://*.netlify.app',         // Allow all Netlify preview URLs
 ];
 
