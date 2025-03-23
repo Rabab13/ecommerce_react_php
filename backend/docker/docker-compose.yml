@@ -14,10 +14,10 @@ services:
       - PHP_DISPLAY_ERRORS=On
       - PHP_LOG_ERRORS=On
       - PHP_ERROR_LOG=/var/log/php_errors.log
-      - DB_HOST=db
-      - DB_USER=root
-      - DB_PASS=root
-      - DB_NAME=scandiweb_ecommerce
+      - MYSQL_HOST=db
+      - MYSQL_USER=root
+      - MYSQL_PASS=root
+      - MYSQL_NAME=scandiweb_ecommerce
       - APACHE_RUN_USER=www-data
       - APACHE_RUN_GROUP=www-data
     volumes:
