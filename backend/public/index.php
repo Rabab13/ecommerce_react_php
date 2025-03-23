@@ -20,8 +20,12 @@ $allowed_origins = [
 // Allow any *.netlify.app domain dynamically
 $allow_netlify = preg_match('/^https:\/\/[a-z0-9\-]+\.netlify\.app$/', $origin);
 
-if (in_array($origin, $allowed_origins, true) || $allow_netlify) {
-      header("Access-Control-Allow-Origin: $origin");
+// Debug the received origin
+error_log("Received Origin: " . ($origin ?: 'NULL'));
+
+// Allow requests with no origin (e.g., from the same origin or non-browser clients)
+if (empty($origin) || in_array($origin, $allowed_origins, true) || $allow_netlify) {
+      header("Access-Control-Allow-Origin: " . (empty($origin) ? '*' : $origin));
       header("Access-Control-Allow-Credentials: true");
 } else {
       error_log("Disallowed Origin: $origin");
