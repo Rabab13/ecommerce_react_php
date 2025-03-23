@@ -1,5 +1,6 @@
 <?php
 // src/Database/Database.php
+
 namespace App\Database;
 
 use PDO;
@@ -12,30 +13,43 @@ class Database
 
       private function __construct()
       {
-            // Use $_ENV to access environment variables
-            $host = $_ENV['DB_HOST'] ?? null;
-            $dbname = $_ENV['DB_NAME'] ?? null;
-            $username = $_ENV['DB_USER'] ?? null;
-            $password = $_ENV['DB_PASSWORD'] ?? null;
+            // Use MYSQL_* environment variables
+            $host = getenv('MYSQL_HOST_OVERRIDE') ?: getenv('MYSQL_HOST');
+            $port = getenv('MYSQL_PORT');
+            $dbname = getenv('MYSQL_DATABASE');
+            $username = getenv('MYSQL_USER');
+            $password = getenv('MYSQL_PASSWORD');
 
-            // Log environment variables for debugging
-            error_log("DB_HOST: $host");
-            error_log("DB_NAME: $dbname");
-            error_log("DB_USER: $username");
-            error_log("DB_PASSWORD: $password");
+            // Debug logging to verify environment variables
+            error_log("[DEBUG] MYSQL_HOST: " . getenv('MYSQL_HOST'));
+            error_log("[DEBUG] MYSQL_PORT: " . getenv('MYSQL_PORT'));
+            error_log("[DEBUG] MYSQL_DATABASE: " . getenv('MYSQL_DATABASE'));
+            error_log("[DEBUG] MYSQL_USER: " . getenv('MYSQL_USER'));
+            error_log("[DEBUG] MYSQL_PASSWORD: " . (getenv('MYSQL_PASSWORD') ? "Set" : "Empty"));
 
-            // Validate environment variables
-            if (!$host || !$dbname || !$username || !$password) {
+            // Validate required environment variables
+            if (!$host || !$port || !$dbname || !$username || !$password) {
+                  error_log("[ENV VAR DEBUG] Host: $host | Port: $port | MYSQL: $dbname | User: $username | Password: " . ($password ? "Set" : "Empty"));
                   throw new \RuntimeException("Missing database configuration in environment variables.");
             }
 
-            // Create PDO connection
+            // Construct the DSN (Data Source Name)
+            $dsn = "mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4";
+            error_log("[DEBUG] DSN: $dsn");
+
             try {
-                  $this->connection = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
-                  $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                  // Create a new PDO instance for the database connection
+                  $this->connection = new PDO($dsn, $username, $password, [
+                        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, // Enable exceptions for errors
+                        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, // Set default fetch mode to associative array
+                        PDO::ATTR_TIMEOUT => 10 // Set connection timeout to 10 seconds
+                  ]);
+                  error_log("[Database Connected] Successfully connected to DB.");
             } catch (PDOException $e) {
-                  error_log("Database connection failed: " . $e->getMessage());
-                  throw new \RuntimeException("Database connection failed.");
+                  // Log the error and throw an exception if the connection fails
+                  error_log("[Database DSN] $dsn");
+                  error_log("[PDO ERROR] " . $e->getMessage());
+                  throw new \RuntimeException("Database connection failed: " . $e->getMessage());
             }
       }
 
