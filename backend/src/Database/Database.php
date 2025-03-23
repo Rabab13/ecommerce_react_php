@@ -19,6 +19,7 @@ class Database
             $dbname = getenv('MYSQL_DATABASE');
             $username = getenv('MYSQL_USER');
             $password = getenv('MYSQL_PASSWORD');
+            $url = getenv('MYSQL_URL');
 
             // Debug logging to verify environment variables
             error_log("[DEBUG] MYSQL_HOST: " . getenv('MYSQL_HOST'));
