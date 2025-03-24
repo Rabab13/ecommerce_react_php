@@ -67,11 +67,15 @@ const CartOverlay = ({
   // Ref for the CartOverlay container to detect clicks outside
   const cartOverlayRef = useRef(null);
 
-  // Close CartOverlay when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
+      // Check if click is outside the cart overlay
       if (cartOverlayRef.current && !cartOverlayRef.current.contains(event.target)) {
-        onClose();
+        // Check if click is not on the cart button
+        const cartButton = document.querySelector('[data-testid="cart-btn"]');
+        if (!cartButton || !cartButton.contains(event.target)) {
+          onClose();
+        }
       }
     };
 
