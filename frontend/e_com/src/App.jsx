@@ -52,8 +52,8 @@ const App = () => {
 
     const productToAdd = {
       ...product,
-      image: product.gallery?.[0]?.image_url || 'path/to/fallback/image.png', // Set the image URL from the gallery
-      quantity: 1, 
+      image: product.gallery?.[0]?.image_url || 'path/to/fallback/image.png',
+      quantity: 1,
       uniqueId,
       selectedAttributes: product.selectedAttributes,
     };
@@ -70,31 +70,15 @@ const App = () => {
       }
     });
 
+    // Always open the cart when adding an item
+    // setIsCartOpen(true);
     handleCartOpen();
   };
 
   // Handle quick shop action
   const handleQuickShop = (product) => {
-    const uniqueId = `${product.id}-${JSON.stringify(product.selectedAttributes)}`;
-
-    const existingItem = cartItems.find((item) => item.uniqueId === uniqueId);
-    if (existingItem) {
-      setCartItems((prevCartItems) =>
-        prevCartItems.map((item) =>
-          item.uniqueId === uniqueId ? { ...item, quantity: item.quantity + 1 } : item
-        )
-      );
-    } else {
-      const cartItem = {
-        ...product,
-        image: product.gallery?.[0]?.image_url || 'path/to/fallback/image.png', 
-        quantity: 1, 
-        uniqueId,
-        selectedAttributes: product.selectedAttributes,
-      };
-      setCartItems((prevCartItems) => [...prevCartItems, cartItem]);
-      setIsCartOpen(true);
-    }
+    handleAddToCart(product); // Reuse the same logic as handleAddToCart
+    setIsCartOpen(true); // Ensure cart opens
   };
 
   if (categoriesLoading || productsLoading) {
@@ -106,26 +90,30 @@ const App = () => {
   const products = productsData?.productsByCategory || [];
   const categories = categoriesData?.categories || [];
 
+  // const toggleCart = () => {
+  //   console.log('Cart tog'); // Log when cart closes
+  //   setIsCartOpen(prev => !prev);
+  // };
 
   const handleCartOpen = () => {
+    console.log('Cart opened'); // Log when cart opens
     setIsCartOpen(true);
-    console.log('Cart Open State:', true);
   };
-  
+
   const handleCartClose = () => {
+    console.log('Cart closed'); // Log when cart closes
     setIsCartOpen(false);
-    console.log('Cart Open State:', false);
   };
-  
+
   const toggleCart = () => {
-    setIsCartOpen(prev => {
-      const newState = !prev;
-      console.log('Cart Open State:', newState);
-      return newState;
-    });
+    if (isCartOpen) {
+      handleCartClose();
+    } else {
+      handleCartOpen();
+    }
   };
-  
-  
+
+
   return (
     <div className="App">
       <Header
@@ -135,9 +123,7 @@ const App = () => {
         onCategoryClick={(categoryName) => {
           setActiveCategory(categoryName);
           navigate(categoryName === 'all' ? '/' : `/${categoryName}`);
-          
         }}
-        
         toggleCart={toggleCart}
       />
 
@@ -163,7 +149,8 @@ const App = () => {
               element={
                 <>
                   <h1 className="text-2xl mb-5">{category.name.toUpperCase()} </h1>
-                  <ProductList products={products}
+                  <ProductList
+                    products={products}
                     onQuickShop={handleQuickShop}
                     onAddToCart={handleAddToCart}
                   />
@@ -184,8 +171,17 @@ const App = () => {
         </Routes>
       </main>
 
+      {/* Cart Overlay */}
       {isCartOpen && (
-        <div data-testid="cart-overlay" onClick={toggleCart} className="fixed inset-0 bg-black bg-opacity-50 z-40">
+        <div 
+          data-testid="cart-overlay" 
+          onClick={handleCartClose} 
+          className="fixed inset-0 bg-black bg-opacity-50 z-40"
+        >
+            <div 
+      className="absolute right-0 h-full bg-white shadow-xl"
+      onClick={(e) => e.stopPropagation()} // Prevent click from reaching backdrop
+    >
           <CartOverlay
             cartItems={cartItems}
             onClose={handleCartClose}
@@ -211,7 +207,8 @@ const App = () => {
               setIsCartOpen(false);
             }}
           />
-        </div>
+          </div>
+          </div>
       )}
     </div>
   );

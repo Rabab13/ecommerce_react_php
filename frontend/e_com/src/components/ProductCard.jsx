@@ -47,7 +47,7 @@ const ProductCard = ({ product, onQuickShop }) => {
   
       // Fire the Quick Shop handler (assumed to handle add to cart + open cart)
       onQuickShop(productWithDefaults);
-      // openCart(); // Uncomment this line if you have an openCart function defined elsewhere
+      
     } else {
       console.error('onQuickShop is not a function');
     }
