@@ -140,6 +140,7 @@ const ProductDetails = ({ onAddToCart, setActiveCategory, products }) => {
                         height: attr.name === 'Color' ? '30px' : '45px',
                       }}
                       onClick={() => handleAttributeSelect(attr.id, item.id)}
+                      data-testid={`product-attribute-${attributeNameKebabCase}-${item.value.replace(/#/g, '')}`} // Example: product-attribute-color-44FF03
                     >
                       {attr.name === 'Color' ? (
                         <span
@@ -176,7 +177,6 @@ const ProductDetails = ({ onAddToCart, setActiveCategory, products }) => {
             style={{ textTransform: 'uppercase' }}
             data-testid="add-to-cart"
           >
-          
             {!selectedProduct.inStock ? 'Out of Stock' : 'Add to Cart'}
           </button>
 
