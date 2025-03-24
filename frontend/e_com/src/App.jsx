@@ -53,7 +53,7 @@ const App = () => {
     const productToAdd = {
       ...product,
       image: product.gallery?.[0]?.image_url || 'path/to/fallback/image.png', // Set the image URL from the gallery
-      quantity: 1, // Set the quantity to 1 for new items
+      quantity: 1, 
       uniqueId,
       selectedAttributes: product.selectedAttributes,
     };

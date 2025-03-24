@@ -16,7 +16,7 @@ const Header = ({
 
   const handleCategoryClick = (categoryName) => {
     onCategoryClick(categoryName);
-    navigate(categoryName === 'all' ? '/' : `/${categoryName}`);
+    navigate(`/${categoryName}`);
   };
 
   const handleHomeClick = () => {
@@ -32,7 +32,7 @@ const Header = ({
         <nav className="flex space-x-8">
           {/* Add the "All" link */}
           <Link
-            to="/"
+            to="/all"
             className={`text-lg pb-8 transition-colors uppercase ${
               normalizedActiveCategory === 'all'
                 ? 'text-green-500 border-b-2 border-green-500'
