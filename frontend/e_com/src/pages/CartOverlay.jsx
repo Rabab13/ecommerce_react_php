@@ -12,21 +12,14 @@ const CartOverlay = ({
   onDecrease,
   onPlaceOrder,
 }) => {
-  // const total = cartItems.reduce((acc, item) => {
-  //   const priceAmount = item.prices.length > 0 ? item.prices[0].amount : 0;
-  //   return acc + priceAmount * (item.quantity || 0);
-  // }, 0);
-
-   // Calculate the total number of items in the cart
+ 
  const totalItems = cartItems.reduce((acc, item) => acc + (item.quantity || 1), 0);
-
- // Calculate the total price of the cart
  const total = cartItems.reduce((acc, item) => {
    const priceAmount = item.prices.length > 0 ? item.prices[0].amount : 0;
    return acc + priceAmount * (item.quantity || 0);
  }, 0);
 
-  // Use the mutation hook
+  // Define the GraphQL mutation for inserting an order
   const [insertOrder] = useMutation(INSERT_ORDER_MUTATION);
 
   // Function to handle placing an order

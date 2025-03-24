@@ -87,26 +87,22 @@ const App = () => {
     } else {
       const cartItem = {
         ...product,
-        image: product.gallery?.[0]?.image_url || 'path/to/fallback/image.png', // Set the image URL from the gallery
-        quantity: 1, // Set the quantity to 1 for new items
+        image: product.gallery?.[0]?.image_url || 'path/to/fallback/image.png', 
+        quantity: 1, 
         uniqueId,
         selectedAttributes: product.selectedAttributes,
       };
       setCartItems((prevCartItems) => [...prevCartItems, cartItem]);
+      setIsCartOpen(true);
     }
   };
 
-  // Display loading state
   if (categoriesLoading || productsLoading) {
     return <p>Loading...</p>;
   }
-
-  // Display error state
   if (categoriesError || productsError) {
     return <p>Error loading data. Please try again later.</p>;
   }
-
-  // Fallback for undefined data
   const products = productsData?.productsByCategory || [];
   const categories = categoriesData?.categories || [];
 
@@ -117,11 +113,11 @@ const App = () => {
         categories={categories}
         activeCategory={activeCategory}
         onCategoryClick={(categoryName) => {
-          console.log('Category clicked:', categoryName); // Debugging
           setActiveCategory(categoryName);
           navigate(categoryName === 'all' ? '/' : `/${categoryName}`);
+          
         }}
-        toggleCart={() => setIsCartOpen((prev) => !prev)}
+        toggleCart={() => setIsCartOpen(false)}
       />
 
       <main className="max-w-7xl mx-auto p-4 pt-24">
@@ -146,7 +142,10 @@ const App = () => {
               element={
                 <>
                   <h1 className="text-2xl mb-5">{category.name.toUpperCase()} </h1>
-                  <ProductList products={products} onQuickShop={handleQuickShop} />
+                  <ProductList products={products}
+                    onQuickShop={handleQuickShop}
+                    onAddToCart={handleAddToCart}
+                  />
                 </>
               }
             />

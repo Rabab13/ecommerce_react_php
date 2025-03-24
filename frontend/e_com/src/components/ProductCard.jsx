@@ -32,15 +32,22 @@ const ProductCard = ({ product, onQuickShop }) => {
   
 
   const handleQuickShop = (e) => {
-    e.stopPropagation(); // Prevent navigation when clicking the Quick Shop button
-
+    e.stopPropagation(); // Prevent navigation to the product page
+  
     if (typeof onQuickShop === 'function') {
+      // Generate default attributes for this product
       const defaultAttributes = getDefaultAttributes();
+  
+      // Create the product object with default attributes
       const productWithDefaults = {
         ...product,
-        selectedAttributes: defaultAttributes, // Add default attributes to the product
+        selectedAttributes: defaultAttributes,
+        uniqueId: `${product.id}-${JSON.stringify(defaultAttributes)}`,
       };
-      onQuickShop(productWithDefaults); // Pass the product with default attributes
+  
+      // Fire the Quick Shop handler (assumed to handle add to cart + open cart)
+      onQuickShop(productWithDefaults);
+      // openCart(); // Uncomment this line if you have an openCart function defined elsewhere
     } else {
       console.error('onQuickShop is not a function');
     }
