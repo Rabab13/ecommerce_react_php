@@ -70,7 +70,7 @@ const App = () => {
       }
     });
 
-    setIsCartOpen(true);
+    handleCartOpen();
   };
 
   // Handle quick shop action
@@ -107,9 +107,24 @@ const App = () => {
   const categories = categoriesData?.categories || [];
 
 
-  const toggleCart = () => {
-    setIsCartOpen(prev => !prev); 
+  const handleCartOpen = () => {
+    setIsCartOpen(true);
+    console.log('Cart Open State:', true);
   };
+  
+  const handleCartClose = () => {
+    setIsCartOpen(false);
+    console.log('Cart Open State:', false);
+  };
+  
+  const toggleCart = () => {
+    setIsCartOpen(prev => {
+      const newState = !prev;
+      console.log('Cart Open State:', newState);
+      return newState;
+    });
+  };
+  
   
   return (
     <div className="App">
@@ -122,7 +137,7 @@ const App = () => {
           navigate(categoryName === 'all' ? '/' : `/${categoryName}`);
           
         }}
-        // toggleCart={() => setIsCartOpen(false)}
+        
         toggleCart={toggleCart}
       />
 
@@ -173,7 +188,7 @@ const App = () => {
         <div data-testid="cart-overlay" className="fixed inset-0 bg-black bg-opacity-50 z-40">
           <CartOverlay
             cartItems={cartItems}
-            onClose={() => setIsCartOpen(false)}
+            onClose={handleCartClose}
             onIncrease={(uniqueId) => {
               setCartItems((prevCartItems) =>
                 prevCartItems.map((item) =>
