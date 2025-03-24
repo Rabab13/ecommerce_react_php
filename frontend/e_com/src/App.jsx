@@ -14,6 +14,7 @@ const App = () => {
   const [activeCategory, setActiveCategory] = useState('all');
   const [cartItems, setCartItems] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [cartOpenedByButton, setCartOpenedByButton] = useState(false);
 
   // Fetch categories
   const { loading: categoriesLoading, error: categoriesError, data: categoriesData } = useQuery(GET_CATEGORIES);
@@ -106,6 +107,17 @@ const App = () => {
   const products = productsData?.productsByCategory || [];
   const categories = categoriesData?.categories || [];
 
+
+const toggleCart = () => {
+  if (cartOpenedByButton) {
+    setIsCartOpen(false);
+    setCartOpenedByButton(false);
+  } else {
+    setIsCartOpen(true);
+    setCartOpenedByButton(true);
+  }
+};
+  
   return (
     <div className="App">
       <Header
@@ -117,7 +129,8 @@ const App = () => {
           navigate(categoryName === 'all' ? '/' : `/${categoryName}`);
           
         }}
-        toggleCart={() => setIsCartOpen(false)}
+        // toggleCart={() => setIsCartOpen(false)}
+        toggleCart={toggleCart}
       />
 
       <main className="max-w-7xl mx-auto p-4 pt-24">
@@ -167,7 +180,11 @@ const App = () => {
         <div data-testid="cart-overlay" className="fixed inset-0 bg-black bg-opacity-50 z-40">
           <CartOverlay
             cartItems={cartItems}
-            onClose={() => setIsCartOpen(false)}
+            // onClose={() => setIsCartOpen(false)}
+            onClose={() => {
+              setIsCartOpen(false);
+              setCartOpenedByButton(false);
+            }}
             onIncrease={(uniqueId) => {
               setCartItems((prevCartItems) =>
                 prevCartItems.map((item) =>
