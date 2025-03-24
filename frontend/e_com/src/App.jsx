@@ -185,7 +185,7 @@ const App = () => {
       </main>
 
       {isCartOpen && (
-        <div data-testid="cart-overlay" className="fixed inset-0 bg-black bg-opacity-50 z-40">
+        <div data-testid="cart-overlay" onClick={toggleCart} className="fixed inset-0 bg-black bg-opacity-50 z-40">
           <CartOverlay
             cartItems={cartItems}
             onClose={handleCartClose}
