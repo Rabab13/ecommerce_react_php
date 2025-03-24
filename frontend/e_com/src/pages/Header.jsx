@@ -5,7 +5,7 @@ import home from '../assets/home.svg';
 
 const Header = ({
   categories = [],
-  activeCategory = '',
+  activeCategory = 'all',
   onCategoryClick,
   cartItems = [],
   toggleCart,
@@ -24,15 +24,17 @@ const Header = ({
     navigate('/');
   };
 
+  const normalizedActiveCategory = activeCategory.toLowerCase();
+
   return (
     <header className="w-full bg-white fixed top-0 left-0 z-50">
       <div className="max-w-7xl mx-auto p-4 flex justify-between items-center pl-4">
         <nav className="flex space-x-8">
           {/* Add the "All" link */}
           <Link
-            to="/all"
+            to="/"
             className={`text-lg pb-8 transition-colors uppercase ${
-              activeCategory.toLowerCase() === 'all'
+              normalizedActiveCategory === 'all'
                 ? 'text-green-500 border-b-2 border-green-500'
                 : 'text-gray-700 hover:text-green-500'
             }`}
@@ -51,14 +53,14 @@ const Header = ({
                 key={category.id}
                 to={`/${category.name.toLowerCase()}`}
                 className={`text-lg pb-8 transition-colors uppercase ${
-                  category.name.toLowerCase() === activeCategory.toLowerCase()
+                  category.name.toLowerCase() === normalizedActiveCategory
                     ? 'text-green-500 border-b-2 border-green-500'
                     : 'text-gray-700 hover:text-green-500'
                 }`}
                 onClick={() => handleCategoryClick(category.name)}
                 aria-label={`Select category ${category.name}`}
                 data-testid={
-                  category.name.toLowerCase() === activeCategory.toLowerCase()
+                  category.name.toLowerCase() === normalizedActiveCategory
                     ? 'active-category-link'
                     : 'category-link'
                 }
