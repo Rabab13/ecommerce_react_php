@@ -41,30 +41,44 @@ const Header = ({
             ALL
           </Link>
 
-          {/* Render other category links */}
-          {categories.map((category) => (
-            <Link
-              key={category.id}
-              to={`/${category.name.toLowerCase()}`}
-              className={`text-lg pb-8 transition-colors uppercase ${
-                category.name.toLowerCase() === activeCategory.toLowerCase()
-                  ? 'text-green-500 border-b-2 border-green-500'
-                  : 'text-gray-700 hover:text-green-500'
-              }`}
-              onClick={() => onCategoryClick(category.name)}
-              aria-label={`Select category ${category.name}`}
-              data-testid={
-                category.name.toLowerCase() === activeCategory.toLowerCase()
-                  ? 'active-category-link'
-                  : 'category-link'
-              }
-            >
-              {category.name.toUpperCase()}
-            </Link>
-          ))}
+         {/* Render other category links */}
+         {categories.map((category) => {
+            // Skip rendering the "All" link again if the category is "all"
+            if (category.name.toLowerCase() === 'all') return null;
+
+            return (
+              <Link
+                key={category.id}
+                to={`/${category.name.toLowerCase()}`}
+                className={`text-lg pb-8 transition-colors uppercase ${
+                  category.name.toLowerCase() === activeCategory.toLowerCase()
+                    ? 'text-green-500 border-b-2 border-green-500'
+                    : 'text-gray-700 hover:text-green-500'
+                }`}
+                onClick={() => handleCategoryClick(category.name)}
+                aria-label={`Select category ${category.name}`}
+                data-testid={
+                  category.name.toLowerCase() === activeCategory.toLowerCase()
+                    ? 'active-category-link'
+                    : 'category-link'
+                }
+              >
+                {category.name.toUpperCase()}
+              </Link>
+            );
+          })}
         </nav>
 
-        {/* Cart button and other elements */}
+        <div className="absolute left-1/2 transform -translate-x-1/2">
+          <button
+            onClick={handleHomeClick}
+            className="p-2 rounded-full transition"
+            aria-label="Navigate to Home"
+          >
+            <img src={home} alt="Home Icon" className="w-10 h-10" />
+          </button>
+        </div>
+
         <button
           data-testid="cart-btn"
           onClick={toggleCart}
@@ -72,9 +86,9 @@ const Header = ({
           aria-label="Open Cart"
         >
           <img src={cart} alt="Cart Icon" className="w-5 h-5" />
-          {cartItems.length > 0 && (
+          {cartItemsCount > 0 && (
             <span className="absolute top-0 right-0 bg-black text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-              {cartItems.length}
+              {cartItemsCount}
             </span>
           )}
         </button>
