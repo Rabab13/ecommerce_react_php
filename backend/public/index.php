@@ -9,40 +9,33 @@ require_once __DIR__ . '/../vendor/autoload.php';
 $dotenv = Dotenv::createImmutable(__DIR__ . '/..');
 $dotenv->load();
 
-// Handle CORS more robustly
-$origin = $_SERVER['HTTP_ORIGIN'] ?? $_SERVER['HTTP_HOST'] ?? '';
-$requestMethod = $_SERVER['REQUEST_METHOD'];
-
-// Allowed origins (match your frontend URLs exactly)
+// Enhanced CORS handling
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
 $allowedOrigins = [
       'https://rococo-puppy-56bad8.netlify.app',
       'http://localhost:5173',
-      'https://ecommercereactphp-production.up.railway.app' // Add your backend domain if needed
+      'https://ecommercereactphp-production.up.railway.app'
 ];
 
-// Dynamic Netlify wildcard matching
+// Allow all Netlify subdomains and preview URLs
 $isNetlify = preg_match('/^https:\/\/([a-z0-9\-]+\.)?netlify\.app$/', $origin);
-$isAllowed = in_array($origin, $allowedOrigins, true) || $isNetlify;
+$isRailway = str_contains($origin, 'up.railway.app');
+$isAllowed = in_array($origin, $allowedOrigins, true) || $isNetlify || $isRailway;
 
-// Handle preflight requests
-if ($requestMethod === 'OPTIONS') {
-      header("Access-Control-Allow-Origin: " . ($isAllowed ? $origin : $allowedOrigins[0]));
-      header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
-      header("Access-Control-Allow-Headers: Content-Type, Authorization, Origin, Accept");
+if ($isAllowed || empty($origin)) {
+      header("Access-Control-Allow-Origin: " . ($origin ?: $allowedOrigins[0]));
       header("Access-Control-Allow-Credentials: true");
-      header("Access-Control-Max-Age: 86400");
-      http_response_code(204);
-      exit;
+      header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+      header("Access-Control-Allow-Headers: Content-Type, Authorization");
+} else {
+      error_log("CORS rejection for origin: $origin");
+      http_response_code(403);
+      die(json_encode(['error' => 'Origin not allowed']));
 }
 
-// Handle actual requests
-if ($isAllowed || empty($origin)) {
-      header("Access-Control-Allow-Origin: " . ($isAllowed ? $origin : $allowedOrigins[0]));
-      header("Access-Control-Allow-Credentials: true");
-} else {
-      error_log("CORS violation: $origin");
-      http_response_code(403);
-      echo json_encode(['error' => 'Origin not allowed']);
+// Handle preflight requests
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+      http_response_code(204);
       exit;
 }
 
