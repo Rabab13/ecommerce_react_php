@@ -160,6 +160,7 @@ try {
 
       // Roll back the transaction (for testing purposes)
       $connection->rollBack();
+      // $connection->commit(); to commit the transaction
       echo "Test completed successfully. No changes were made to the database.";
 } catch (\Exception $e) {
       // Roll back the transaction in case of an error
