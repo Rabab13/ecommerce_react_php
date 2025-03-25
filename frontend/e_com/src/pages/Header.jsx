@@ -99,7 +99,7 @@ const Header = ({
           <button
             onClick={toggleCart}
             data-testid="cart-btn"
-            className="relative p-2 text-gray-700 hover:text-green-500"
+            className="relative p-2  text-gray-700 hover:text-green-500"
             aria-label="Open Cart"
           >
             <img src={cart} alt="Cart Icon" className="w-5 h-5" />

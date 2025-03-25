@@ -9,6 +9,7 @@ const ProductDetails = ({ onAddToCart, setActiveCategory, products }) => {
   const [selectedAttributes, setSelectedAttributes] = useState({});
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
+  // Find the product when the component mounts or when `products` or `id` changes
   useEffect(() => {
     if (products && id) {
       const product = products.find((p) => p.id.toString() === id);
@@ -20,13 +21,16 @@ const ProductDetails = ({ onAddToCart, setActiveCategory, products }) => {
     }
   }, [products, id, setActiveCategory]);
 
+  // Handle attribute selection
   const handleAttributeSelect = (attributeId, value) => {
     setSelectedAttributes((prev) => ({ ...prev, [attributeId]: value }));
   };
 
+  // Check if all attributes are selected
   const allAttributesSelected =
     selectedProduct?.attributes?.every((attr) => selectedAttributes[attr.id]);
 
+  // Handle adding the product to the cart
   const handleAddToCart = () => {
     if (!selectedProduct?.inStock) {
       alert('This product is out of stock.');
@@ -47,6 +51,7 @@ const ProductDetails = ({ onAddToCart, setActiveCategory, products }) => {
     onAddToCart(productToAdd);
   };
 
+  // Handle image navigation
   const handleNextImage = () => {
     setCurrentImageIndex((prevIndex) =>
       prevIndex === selectedProduct.gallery.length - 1 ? 0 : prevIndex + 1
@@ -60,66 +65,56 @@ const ProductDetails = ({ onAddToCart, setActiveCategory, products }) => {
   };
 
   if (!selectedProduct) {
-    return <p className="text-center p-4">Product not found</p>;
+    return <p>Product not found</p>;
   }
 
   return (
-    <div className="container mx-auto px-4 py-6 md:py-10">
-      <div className="flex flex-col lg:flex-row gap-6 md:gap-10">
-        {/* Image Gallery - Mobile First */}
-        <div className="flex flex-col-reverse sm:flex-row gap-4 w-full">
-          {/* Thumbnails - Horizontal on mobile, Vertical on larger screens */}
-          <div className="flex flex-row sm:flex-col gap-2 overflow-x-auto sm:overflow-x-visible sm:w-20">
+    <div className="flex justify-center items-center p-5 mt-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-20 bg-white w-full max-w-6xl">
+        {/* Image Gallery */}
+        <div className="flex flex-col md:flex-row gap-4" data-testid="product-gallery">
+          {/* Thumbnails */}
+          <div className="flex flex-row md:flex-col space-x-3 md:space-x-0 md:space-y-3">
             {selectedProduct.gallery.map((image, index) => (
-              <button
+              <img
                 key={index}
-                onClick={() => setCurrentImageIndex(index)}
-                className={`flex-shrink-0 w-16 h-16 sm:w-full sm:h-20 border rounded ${
-                  index === currentImageIndex ? 'border-2 border-green-600' : 'border-gray-200'
+                src={image.image_url}
+                alt={`Thumbnail ${index}`}
+                className={`w-20 h-20 object-contain rounded cursor-pointer transition-transform transform hover:scale-110 ${
+                  index === currentImageIndex ? 'border-2 border-green-600' : ''
                 }`}
-              >
-                <img
-                  src={image.image_url}
-                  alt={`Thumbnail ${index}`}
-                  className="w-full h-full object-contain"
-                />
-              </button>
+                onClick={() => setCurrentImageIndex(index)}
+              />
             ))}
           </div>
 
-          {/* Main Image */}
-          <div className="relative w-full aspect-square sm:aspect-auto sm:h-[400px] lg:h-[500px] bg-gray-50 rounded-lg overflow-hidden">
+          {/* Main Image with Navigation Arrows */}
+          <div className="relative w-full" style={{ maxWidth: '976px', maxHeight: '541px' }}>
             <img
               src={selectedProduct.gallery[currentImageIndex].image_url}
               alt={selectedProduct.name}
-              className="w-full h-full object-contain p-4"
+              className="w-full h-full object-contain"
             />
-            
-            {/* Navigation Arrows */}
-            {selectedProduct.gallery.length > 1 && (
-              <>
-                <button
-                  onClick={handlePrevImage}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-black bg-opacity-50 text-white rounded-full flex items-center justify-center hover:bg-opacity-75"
-                >
-                  &#10094;
-                </button>
-                <button
-                  onClick={handleNextImage}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-black bg-opacity-50 text-white rounded-full flex items-center justify-center hover:bg-opacity-75"
-                >
-                  &#10095;
-                </button>
-              </>
-            )}
+            {/* Left Arrow */}
+            <button
+              onClick={handlePrevImage}
+              className="absolute left-0 w-[32px] h-[32px] top-1/2 bg-black text-white  hover:bg-opacity-75"
+            >
+              &#10094;
+            </button>
+            {/* Right Arrow */}
+            <button
+              onClick={handleNextImage}
+              className="absolute right-0 top-1/2 w-[32px] h-[32px] bg-black text-white hover:bg-opacity-75"
+            >
+              &#10095;
+            </button>
           </div>
         </div>
 
         {/* Product Details */}
-        <div className="w-full lg:max-w-md xl:max-w-lg space-y-4 md:space-y-6">
-          <h2 className="text-2xl md:text-3xl font-semibold text-gray-800">
-            {selectedProduct.name}
-          </h2>
+        <div className="flex flex-col w-[500px] space-y-4">
+          <h2 className="text-3xl font-semibold text-gray-800">{selectedProduct.name}</h2>
 
           {/* Attributes */}
           {selectedProduct.attributes.map((attr) => {
@@ -129,25 +124,36 @@ const ProductDetails = ({ onAddToCart, setActiveCategory, products }) => {
                 <h3 className="text-lg mb-2 font-medium text-gray-700" style={{ textTransform: 'uppercase' }}>
                   {attr.name}:
                 </h3>
-                <div className="flex flex-wrap gap-2 mt-2">
+                <div className="flex gap-1">
                   {attr.items.map((item) => (
                     <button
                       key={item.id}
-                      className={`flex items-center justify-center border rounded transition-all ${
+                      className={`flex items-center justify-center border transition-all duration-200 ${
                         selectedAttributes[attr.id] === item.id
                           ? attr.name === 'Color'
-                            ? 'ring-2 ring-green-600'
-                            : 'bg-black text-white border-black'
-                          : 'border-gray-300 hover:bg-gray-100'
+                            ? 'border-green-600'
+                            : 'bg-black  border-black text-white'
+                          : 'border-gray-300 hover:bg-gray-200'
                       }`}
                       style={{
-                        minWidth: attr.name === 'Capacity' ? '65px' : attr.name === 'Color' ? '32px' : '44px',
-                        height: attr.name === 'Color' ? '32px' : '44px',
-                        ...(attr.name === 'Color' && { backgroundColor: item.value }),
+                        width: attr.name === 'Capacity' ? '65px' : attr.name === 'Color' ? '28px' : attr.name === 'Size' ? '50px': '63px',
+                        height: attr.name === 'Color' ? '30px' : '45px',
                       }}
                       onClick={() => handleAttributeSelect(attr.id, item.id)}
+                      data-testid={`product-attribute-${attributeNameKebabCase}-${item.value.replace(/\s+/g, '')}`} 
                     >
-                      {attr.name !== 'Color' && item.value}
+                      {attr.name === 'Color' ? (
+
+
+                        
+                        
+                        <span
+                          className="w-6 h-6 inline-block"
+                          style={{ backgroundColor: item.value }}
+                        ></span>
+                      ) : (
+                        item.value || 'N/A'
+                      )}
                     </button>
                   ))}
                 </div>
@@ -156,10 +162,10 @@ const ProductDetails = ({ onAddToCart, setActiveCategory, products }) => {
           })}
 
           {/* Pricing */}
-          <div className="mt-6">
-            <h3 className="text-base md:text-lg font-medium text-gray-700 uppercase">Price:</h3>
+          <div>
+            <h3 className="text-lg font-medium text-gray-700" style={{ textTransform: 'uppercase' }}>Price:</h3>
             {selectedProduct.prices.map((price) => (
-              <p key={price.currency.label} className="text-xl md:text-2xl font-bold text-green-600 mt-1">
+              <p key={price.currency.label} className="text-xl font-bold text-green-600">
                 {price.currency.symbol}{price.amount.toFixed(2)}
               </p>
             ))}
@@ -169,19 +175,21 @@ const ProductDetails = ({ onAddToCart, setActiveCategory, products }) => {
           <button
             onClick={handleAddToCart}
             disabled={!allAttributesSelected || !selectedProduct.inStock}
-            className={`w-full md:w-64 py-3 px-6 font-medium text-white rounded transition-all ${
-              allAttributesSelected && selectedProduct.inStock
-                ? 'bg-green-600 hover:bg-green-700'
-                : 'bg-gray-300 cursor-not-allowed'
+            className={`w-60 py-3 font-medium text-white transition-all duration-200 ${
+              allAttributesSelected && selectedProduct.inStock ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-300 cursor-not-allowed'
             }`}
+            style={{ textTransform: 'uppercase' }}
+            data-testid="add-to-cart"
           >
-            {!selectedProduct.inStock ? 'OUT OF STOCK' : 'ADD TO CART'}
+            {!selectedProduct.inStock ? 'Out of Stock' : 'Add to Cart'}
           </button>
 
           {/* Description */}
-          <div className="mt-6 border-t pt-6">
-            <h3 className="text-lg font-medium text-gray-700 mb-3">Description</h3>
-            <div className="prose max-w-none text-gray-600">
+          <div className="mt-4" data-testid="product-description">
+            <div
+              className="description text-gray-600 overflow-y-auto"
+              style={{ maxHeight: '200px' }}
+            >
               {parse(selectedProduct.description)}
             </div>
           </div>
