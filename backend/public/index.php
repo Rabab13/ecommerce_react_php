@@ -22,14 +22,14 @@ $isNetlify = preg_match('/^https:\/\/([a-z0-9\-]+\.)?netlify\.app$/', $origin);
 $isRailway = str_contains($origin, 'up.railway.app');
 $isAllowed = in_array($origin, $allowedOrigins, true) || $isNetlify || $isRailway;
 
-// Enhanced request handling
+// Get request method
 $requestMethod = $_SERVER['REQUEST_METHOD'];
 $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
 
-// Handle preflight first
+// Handle preflight requests first
 if ($requestMethod === 'OPTIONS') {
       header("Access-Control-Allow-Origin: " . ($origin ?: $allowedOrigins[0]));
-      header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
+      header("Access-Control-Allow-Methods: POST, OPTIONS");
       header("Access-Control-Allow-Headers: Content-Type, Authorization");
       header("Access-Control-Allow-Credentials: true");
       header("Access-Control-Max-Age: 86400");
@@ -47,17 +47,25 @@ if ($isAllowed || empty($origin)) {
       die(json_encode(['error' => 'Origin not allowed']));
 }
 
-// Only process POST requests
-if ($requestMethod !== 'POST') {
+// Only process POST requests for GraphQL
+if ($requestMethod !== 'POST' && $requestMethod !== 'OPTIONS') {
+      // Allow GET requests for GraphiQL or other tools if needed
+      if ($requestMethod === 'GET') {
+            // You could return a simple message or GraphiQL interface here
+            header('Content-Type: text/html');
+            echo '<html><body><h1>GraphQL API</h1><p>Send POST requests to this endpoint</p></body></html>';
+            exit;
+      }
       http_response_code(405);
-      echo json_encode(['error' => 'Method not allowed']);
+      header('Allow: POST, OPTIONS');
+      echo json_encode(['error' => 'Method not allowed. Use POST for GraphQL requests']);
       exit;
 }
 
-// Verify content type
-if (strpos($contentType, 'application/json') === false) {
+// Verify content type for POST requests
+if ($requestMethod === 'POST' && strpos($contentType, 'application/json') === false) {
       http_response_code(415);
-      echo json_encode(['error' => 'Unsupported Media Type']);
+      echo json_encode(['error' => 'Unsupported Media Type. Use application/json']);
       exit;
 }
 
