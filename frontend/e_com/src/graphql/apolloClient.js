@@ -32,25 +32,3 @@ const client = new ApolloClient({
 });
 
 export default client;
-// import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
-
-// const httpLink = createHttpLink({
-//   uri: 'https://ecommercereactphp-production.up.railway.app/graphql',
-//   credentials: 'include',
-//   headers: {
-//     'Content-Type': 'application/json',
-//     'Accept': 'application/json'
-//   }
-// });
-
-// const client = new ApolloClient({
-//   link: httpLink,
-//   cache: new InMemoryCache(),
-//   defaultOptions: {
-//     watchQuery: {
-//       fetchPolicy: 'cache-and-network',
-//     }
-//   }
-// });
-
-// export default client;
