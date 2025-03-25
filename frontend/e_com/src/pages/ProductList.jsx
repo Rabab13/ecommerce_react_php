@@ -9,11 +9,10 @@ const ProductList = ({ products, onQuickShop }) => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-16 mb-4 mt-16">
       {products.map((product) => {
-        // Convert product name to kebab case
         const productNameKebabCase = product.name
-          .toLowerCase() // Convert to lowercase
-          .replace(/\s+/g, '-') // Replace spaces with hyphens
-          .replace(/[^a-z0-9-]/g, ''); // Remove special characters
+          .toLowerCase() 
+          .replace(/\s+/g, '-') 
+          .replace(/[^a-z0-9-]/g, ''); 
 
         return (
           <ProductCard

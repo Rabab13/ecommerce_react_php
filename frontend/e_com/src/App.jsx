@@ -3,7 +3,7 @@ import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import Header from './pages/Header';
 import ProductList from './pages/ProductList';
 import ProductDetails from './pages/ProductDetails';
-import CartOverlay from './pages/CartOverlay';
+import CartOverlay from './components/CartOverlay';
 import { GET_PRODUCTS, GET_CATEGORIES } from './graphql/queries';
 import { useQuery } from '@apollo/client';
 

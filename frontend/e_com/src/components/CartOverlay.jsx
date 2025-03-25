@@ -2,7 +2,6 @@ import { useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {useMutation } from '@apollo/client';
 import { INSERT_ORDER_MUTATION } from '../graphql/queries'
-// Define the GraphQL mutation for inserting an order
 
 
 const CartOverlay = ({
@@ -13,42 +12,38 @@ const CartOverlay = ({
   onPlaceOrder,
 }) => {
  
- const totalItems = cartItems.reduce((acc, item) => acc + (item.quantity || 1), 0);
- const total = cartItems.reduce((acc, item) => {
-   const priceAmount = item.prices.length > 0 ? item.prices[0].amount : 0;
-   return acc + priceAmount * (item.quantity || 0);
- }, 0);
+  const totalItems = cartItems.reduce((acc, item) => acc + (item.quantity || 1), 0);
+  const total = cartItems.reduce((acc, item) => {
+    if (!item.prices || item.prices.length === 0) {
+      console.warn(`Warning: Item ${item.id} has no price defined.`);
+      return acc; 
+    }
+    return acc + item.prices[0].amount * (item.quantity || 0);
+  }, 0);
 
-  // Define the GraphQL mutation for inserting an order
+  const currency = cartItems.length > 0 ? cartItems[0].prices[0].currency.label : 'USD';
   const [insertOrder] = useMutation(INSERT_ORDER_MUTATION);
 
-  // Function to handle placing an order
+
   const handlePlaceOrder = async () => {
     try {
-      const total_amount = cartItems.reduce((acc, item) => {
-        if (!item.prices || item.prices.length === 0) {
-          throw new Error(`Item ${item.id} has no prices defined.`);
-        }
-        return acc + item.prices[0].amount * (item.quantity || 0);
-      }, 0);
-
-      const currency = cartItems.length > 0 ? cartItems[0].prices[0].currency.label : 'USD';
-
-      const items = cartItems.map((item) => ({
-        productId: item.id,
-        productName: item.name,
-        quantity: item.quantity,
-        price: item.prices[0].amount,
-        attributes: item.attributes.map((attr) => ({
-          name: attr.name,
-          value: attr.items.find((i) => i.id === item.selectedAttributes[attr.id])?.value || '',
-        })),
-      }));
+      const items = cartItems
+        .filter(item => item.prices && item.prices.length > 0) // ✅ Ensure only valid items are included
+        .map((item) => ({
+          productId: item.id,
+          productName: item.name,
+          quantity: item.quantity,
+          price: item.prices[0].amount,
+          attributes: item.attributes.map((attr) => ({
+            name: attr.name,
+            value: attr.items.find((i) => i.id === item.selectedAttributes[attr.id])?.value || '',
+          })),
+        }));
 
       const response = await insertOrder({
         variables: {
           input: {
-            total_amount,  // Pass the calculated total_amount
+            total_amount: total,  
             currency,
             items,
           },
@@ -60,18 +55,15 @@ const CartOverlay = ({
       onClose();
     } catch (error) {
       console.error('Error placing order:', error);
-
     }
   };
 
-  // Ref for the CartOverlay container to detect clicks outside
+ 
   const cartOverlayRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // Check if click is outside the cart overlay
       if (cartOverlayRef.current && !cartOverlayRef.current.contains(event.target)) {
-        // Check if click is not on the cart button
         const cartButton = document.querySelector('[data-testid="cart-btn"]');
         if (!cartButton || !cartButton.contains(event.target)) {
           onClose();
@@ -79,25 +71,20 @@ const CartOverlay = ({
       }
     };
 
-    // Attach the event listener
     document.addEventListener('mousedown', handleClickOutside);
 
-    // Cleanup the event listener
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [onClose]);
 
   return (
-    <div   className="absolute top-14 right-56 w-80 bg-white p-2 pt-9 shadow-xl z-100 font-raleway" ref={cartOverlayRef}>
+    <div   className="absolute top-14 right-24  xl:right-60 w-80 bg-white p-2 pt-9 shadow-xl z-50 font-raleway" ref={cartOverlayRef}>
       <div className="flex justify-between items-center mb-10">
         <h2 className="text-xl font-bold">My Bag, {totalItems === 0 ? '0 Items' : totalItems === 1 ? '1 Item' : `X Items`}
         </h2>
 
-        
-
         <button className="text-gray-500 hover:text-red-500" onClick={onClose}>
-          {/* Close icon or text */}
         </button>
       </div>
 

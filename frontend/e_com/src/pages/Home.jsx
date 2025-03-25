@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import ProductCard from '../components/ProductCard'
-import CartOverlay from './CartOverlay';
+import CartOverlay from '../components/CartOverlay';
 import Header from './Header';
 
 const Home = ({ 
