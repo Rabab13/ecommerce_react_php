@@ -12,6 +12,16 @@ require_once __DIR__ . '/../vendor/autoload.php';
 $dotenv = Dotenv::createImmutable(__DIR__ . '/..');
 $dotenv->load();
 
+// Get the request path and method
+$requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$requestMethod = $_SERVER['REQUEST_METHOD'];
+
+// Handle root path redirect (GET only)
+if (($requestUri === '/' || $requestUri === '/index.html') && $requestMethod === 'GET') {
+      header('Location: /graphql', true, 301);
+      exit;
+}
+
 // Enhanced CORS handling
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
 $allowedOrigins = [
@@ -25,7 +35,7 @@ $isRailway = str_contains($origin, 'up.railway.app');
 $isAllowed = in_array($origin, $allowedOrigins, true) || $isNetlify || $isRailway;
 
 // Handle preflight requests
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+if ($requestMethod === 'OPTIONS') {
       header("Access-Control-Allow-Origin: " . ($origin ?: $allowedOrigins[0]));
       header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
       header("Access-Control-Allow-Headers: Content-Type, Authorization");
@@ -46,19 +56,10 @@ if ($isAllowed || empty($origin)) {
       exit;
 }
 
-// Handle different endpoints
-$requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-
-// Redirect root path to GraphQL endpoint
-if ($requestUri === '/' || $requestUri === '/index.html') {
-      header('Location: /graphql', true, 301);
-      exit;
-}
-
 // Handle GraphQL endpoint
 if ($requestUri === '/graphql') {
       // Only allow POST requests for GraphQL
-      if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+      if ($requestMethod !== 'POST') {
             http_response_code(405);
             header('Allow: POST, OPTIONS');
             echo json_encode(['error' => 'Method not allowed. Use POST for GraphQL requests']);
@@ -132,5 +133,12 @@ if ($requestUri === '/graphql') {
 }
 
 // Handle all other routes
+if ($requestMethod === 'GET') {
+      // For GET requests to unknown paths, you could serve documentation or a simple message
+      http_response_code(200);
+      echo "Welcome to the API. Use POST /graphql for GraphQL requests.";
+      exit;
+}
+
 http_response_code(404);
 echo json_encode(['error' => 'Not Found']);
