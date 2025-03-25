@@ -124,7 +124,6 @@ const App = () => {
               element={
                 <>
                   <h1 className="text-2xl mb-5">{category.name.toUpperCase()}</h1>
-                  
                   <ProductList
                     products={products}
                     onQuickShop={handleAddToCart}

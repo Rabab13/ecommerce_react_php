@@ -29,7 +29,6 @@ const Header = ({
   return (
     <header className="w-full bg-white fixed  top-0 left-0 z-50 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 pt-2 flex items-center justify-between relative">
-        {/* Navigation - Left side */}
         <nav className="flex space-x-4 sm:space-x-8">
           {/* ALL link */}
           <Link
@@ -86,7 +85,6 @@ const Header = ({
 
         {/* Right side buttons - Home (mobile) and Cart */}
         <div className="flex p-0 items-center space-x-4">
-          {/* Home button - Visible only on mobile */}
           <button
             onClick={handleHomeClick}
             className="lg:hidden p-2 rounded-full transition hover:bg-gray-100"

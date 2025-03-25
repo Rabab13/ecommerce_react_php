@@ -28,7 +28,7 @@ const CartOverlay = ({
   const handlePlaceOrder = async () => {
     try {
       const items = cartItems
-        .filter(item => item.prices && item.prices.length > 0) // ✅ Ensure only valid items are included
+        .filter(item => item.prices && item.prices.length > 0)
         .map((item) => ({
           productId: item.id,
           productName: item.name,

@@ -8,7 +8,7 @@ const ProductCard = ({ product, onQuickShop }) => {
   const navigate = useNavigate();
 
   if (!product) {
-    return null; // Avoid rendering if product is undefined
+    return null; // Return null if no product is provided
   }
 
   const handleClick = () => {
@@ -30,7 +30,6 @@ const ProductCard = ({ product, onQuickShop }) => {
     
   };
   
-
   const handleQuickShop = (e) => {
     e.stopPropagation(); // Prevent navigation to the product page
   
@@ -44,8 +43,7 @@ const ProductCard = ({ product, onQuickShop }) => {
         selectedAttributes: defaultAttributes,
         uniqueId: `${product.id}-${JSON.stringify(defaultAttributes)}`,
       };
-  
-      // Fire the Quick Shop handler (assumed to handle add to cart + open cart)
+
       onQuickShop(productWithDefaults);
       
     } else {
