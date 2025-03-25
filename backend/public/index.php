@@ -9,35 +9,41 @@ require_once __DIR__ . '/../vendor/autoload.php';
 $dotenv = Dotenv::createImmutable(__DIR__ . '/..');
 $dotenv->load();
 
-// Handle CORS
-$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-$allowed_origins = [
-      'https://rococo-puppy-56bad8.netlify.app', // Your Netlify frontend URL
-      'http://localhost:5173',                  // Local dev server
-      'https://*.netlify.app',                  // Allow all Netlify preview URLs
+// Handle CORS more robustly
+$origin = $_SERVER['HTTP_ORIGIN'] ?? $_SERVER['HTTP_HOST'] ?? '';
+$requestMethod = $_SERVER['REQUEST_METHOD'];
+
+// Allowed origins (match your frontend URLs exactly)
+$allowedOrigins = [
+      'https://rococo-puppy-56bad8.netlify.app',
+      'http://localhost:5173',
+      'https://ecommercereactphp-production.up.railway.app' // Add your backend domain if needed
 ];
 
-// Allow any *.netlify.app domain dynamically
-$allow_netlify = preg_match('/^https:\/\/[a-z0-9\-]+\.netlify\.app$/', $origin);
+// Dynamic Netlify wildcard matching
+$isNetlify = preg_match('/^https:\/\/([a-z0-9\-]+\.)?netlify\.app$/', $origin);
+$isAllowed = in_array($origin, $allowedOrigins, true) || $isNetlify;
 
-// Allow requests with no origin (e.g., from the same origin or non-browser clients)
-if (empty($origin) || in_array($origin, $allowed_origins, true) || $allow_netlify) {
-      header("Access-Control-Allow-Origin: " . (empty($origin) ? '*' : $origin));
+// Handle preflight requests
+if ($requestMethod === 'OPTIONS') {
+      header("Access-Control-Allow-Origin: " . ($isAllowed ? $origin : $allowedOrigins[0]));
+      header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
+      header("Access-Control-Allow-Headers: Content-Type, Authorization, Origin, Accept");
       header("Access-Control-Allow-Credentials: true");
-} else {
-      error_log("Disallowed Origin: $origin");
-      http_response_code(403); // Forbidden
+      header("Access-Control-Max-Age: 86400");
+      http_response_code(204);
       exit;
 }
 
-// Required headers
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
-
-// Handle preflight request
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-      http_response_code(200);
-      exit();
+// Handle actual requests
+if ($isAllowed || empty($origin)) {
+      header("Access-Control-Allow-Origin: " . ($isAllowed ? $origin : $allowedOrigins[0]));
+      header("Access-Control-Allow-Credentials: true");
+} else {
+      error_log("CORS violation: $origin");
+      http_response_code(403);
+      echo json_encode(['error' => 'Origin not allowed']);
+      exit;
 }
 
 // Load App Dependencies
