@@ -35,12 +35,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
       exit;
 }
 
-// Handle redirect for root path
-if ($_SERVER['REQUEST_URI'] === '/' || $_SERVER['REQUEST_URI'] === '/index.html') {
-      header('Location: https://ecommercereactphp-production.up.railway.app/graphql', true, 301);
-      exit;
-}
-
 // Set CORS headers for actual requests
 if ($isAllowed || empty($origin)) {
       header("Access-Control-Allow-Origin: " . ($origin ?: $allowedOrigins[0]));
@@ -52,40 +46,47 @@ if ($isAllowed || empty($origin)) {
       exit;
 }
 
-// Only allow POST requests for GraphQL endpoint
-if ($_SERVER['REQUEST_URI'] === '/graphql' && $_SERVER['REQUEST_METHOD'] !== 'POST') {
-      http_response_code(405);
-      header('Allow: POST, OPTIONS');
-      echo json_encode(['error' => 'Method not allowed. Use POST for GraphQL requests']);
+// Handle different endpoints
+$requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+// Redirect root path to GraphQL endpoint
+if ($requestUri === '/' || $requestUri === '/index.html') {
+      header('Location: /graphql', true, 301);
       exit;
 }
 
-// Verify content type for GraphQL endpoint
-if ($_SERVER['REQUEST_URI'] === '/graphql') {
+// Handle GraphQL endpoint
+if ($requestUri === '/graphql') {
+      // Only allow POST requests for GraphQL
+      if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            header('Allow: POST, OPTIONS');
+            echo json_encode(['error' => 'Method not allowed. Use POST for GraphQL requests']);
+            exit;
+      }
+
+      // Verify content type
       $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
       if (strpos($contentType, 'application/json') === false) {
             http_response_code(415);
             echo json_encode(['error' => 'Unsupported Media Type. Use application/json']);
             exit;
       }
-}
 
-// Load dependencies
-require_once __DIR__ . '/../src/Database/Database.php';
-require_once __DIR__ . '/../src/GraphQL/Schema.php';
+      // Load dependencies
+      require_once __DIR__ . '/../src/Database/Database.php';
+      require_once __DIR__ . '/../src/GraphQL/Schema.php';
 
-// Get database connection
-try {
-      $db = Database::getInstance()->getConnection();
-} catch (Exception $e) {
-      error_log("Database connection error: " . $e->getMessage());
-      http_response_code(500);
-      echo json_encode(['error' => 'Database connection failed']);
-      exit;
-}
+      // Get database connection
+      try {
+            $db = Database::getInstance()->getConnection();
+      } catch (Exception $e) {
+            error_log("Database connection error: " . $e->getMessage());
+            http_response_code(500);
+            echo json_encode(['error' => 'Database connection failed']);
+            exit;
+      }
 
-// Only process GraphQL requests for the /graphql endpoint
-if ($_SERVER['REQUEST_URI'] === '/graphql') {
       // Read GraphQL request body
       $rawInput = file_get_contents('php://input');
       error_log("Raw Input: " . $rawInput);
@@ -130,6 +131,6 @@ if ($_SERVER['REQUEST_URI'] === '/graphql') {
       exit;
 }
 
-// Handle other routes
+// Handle all other routes
 http_response_code(404);
 echo json_encode(['error' => 'Not Found']);
