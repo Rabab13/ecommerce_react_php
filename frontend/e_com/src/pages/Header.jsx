@@ -27,14 +27,14 @@ const Header = ({
   const normalizedActiveCategory = activeCategory.toLowerCase();
 
   return (
-    <header className="w-full bg-white fixed top-0 left-0 z-50 shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 py-2 flex flex-col sm:flex-row justify-between items-center">
-        {/* Navigation */}
-        <nav className="flex flex-wrap justify-center sm:justify-start space-x-4 sm:space-x-8 mb-2 sm:mb-0">
+    <header className="w-full bg-white fixed  top-0 left-0 z-50 shadow-sm">
+      <div className="max-w-7xl mx-auto px-4 pt-2 flex items-center justify-between relative">
+        {/* Navigation - Left side */}
+        <nav className="flex space-x-4 sm:space-x-8">
           {/* ALL link */}
           <Link
             to="/all"
-            className={`text-base sm:text-lg pb-2 sm:pb-8 transition-colors uppercase ${
+            className={`text-base sm:text-lg pb-2 transition-colors uppercase ${
               normalizedActiveCategory === 'all'
                 ? 'text-green-500 border-b-2 border-green-500'
                 : 'text-gray-700 hover:text-green-500'
@@ -56,7 +56,7 @@ const Header = ({
               <Link
                 key={category.id}
                 to={`/${category.name.toLowerCase()}`}
-                className={`text-base sm:text-lg pb-2 sm:pb-8 transition-colors uppercase ${
+                className={`text-base sm:text-lg pb-2 transition-colors uppercase ${
                   category.name.toLowerCase() === normalizedActiveCategory
                     ? 'text-green-500 border-b-2 border-green-500'
                     : 'text-gray-700 hover:text-green-500'
@@ -75,15 +75,24 @@ const Header = ({
           })}
         </nav>
 
-        {/* Home and Cart buttons */}
-        <div className="flex space-x-4 lg:space-x-16 mb-2 sm:mb-0">
-          {/* Home button */}
+        {/* Home button - Centered on large screens */}
+        <button
+          onClick={handleHomeClick}
+          className="hidden lg:block absolute left-1/2 transform -translate-x-1/2 p-2 rounded-full transition hover:bg-gray-100"
+          aria-label="Navigate to Home"
+        >
+          <img src={home} alt="Home Icon" className="w-8 h-8" />
+        </button>
+
+        {/* Right side buttons - Home (mobile) and Cart */}
+        <div className="flex p-0 items-center space-x-4">
+          {/* Home button - Visible only on mobile */}
           <button
             onClick={handleHomeClick}
-            className="lg:absolute lg:left-1/2 lg:transform lg:-translate-x-1/2 p-2 rounded-full transition"
+            className="lg:hidden p-2 rounded-full transition hover:bg-gray-100"
             aria-label="Navigate to Home"
           >
-            <img src={home} alt="Home Icon" className="w-8 sm:w-10 h-8 sm:h-10" />
+            <img src={home} alt="Home Icon" className="w-6 h-6 sm:w-8 sm:h-8" />
           </button>
 
           {/* Cart button */}
