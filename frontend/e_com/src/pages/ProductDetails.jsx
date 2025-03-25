@@ -72,7 +72,7 @@ const ProductDetails = ({ onAddToCart, setActiveCategory, products }) => {
     <div className="flex justify-center items-center p-5 mt-10">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 bg-white w-full max-w-6xl p-5">
         {/* Image Gallery */}
-        <div className="flex flex-col md:flex-row gap-4 w-full">
+        <div className="flex flex-col md:flex-row gap-4 w-full" data-testid="product-gallery" >
           {/* Thumbnails */}
           <div className="flex flex-row md:flex-col space-x-3 md:space-x-0 md:space-y-3 overflow-x-auto md:overflow-visible">
             {selectedProduct.gallery.map((image, index) => (
