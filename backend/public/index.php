@@ -22,20 +22,42 @@ $isNetlify = preg_match('/^https:\/\/([a-z0-9\-]+\.)?netlify\.app$/', $origin);
 $isRailway = str_contains($origin, 'up.railway.app');
 $isAllowed = in_array($origin, $allowedOrigins, true) || $isNetlify || $isRailway;
 
+// Enhanced request handling
+$requestMethod = $_SERVER['REQUEST_METHOD'];
+$contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+
+// Handle preflight first
+if ($requestMethod === 'OPTIONS') {
+      header("Access-Control-Allow-Origin: " . ($origin ?: $allowedOrigins[0]));
+      header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
+      header("Access-Control-Allow-Headers: Content-Type, Authorization");
+      header("Access-Control-Allow-Credentials: true");
+      header("Access-Control-Max-Age: 86400");
+      http_response_code(204);
+      exit;
+}
+
+// Set CORS headers for actual requests
 if ($isAllowed || empty($origin)) {
       header("Access-Control-Allow-Origin: " . ($origin ?: $allowedOrigins[0]));
       header("Access-Control-Allow-Credentials: true");
-      header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-      header("Access-Control-Allow-Headers: Content-Type, Authorization");
 } else {
       error_log("CORS rejection for origin: $origin");
       http_response_code(403);
       die(json_encode(['error' => 'Origin not allowed']));
 }
 
-// Handle preflight requests
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-      http_response_code(204);
+// Only process POST requests
+if ($requestMethod !== 'POST') {
+      http_response_code(405);
+      echo json_encode(['error' => 'Method not allowed']);
+      exit;
+}
+
+// Verify content type
+if (strpos($contentType, 'application/json') === false) {
+      http_response_code(415);
+      echo json_encode(['error' => 'Unsupported Media Type']);
       exit;
 }
 
@@ -54,12 +76,16 @@ $db = Database::getInstance()->getConnection();
 $schema = Schema::create($db);
 
 // Read GraphQL request
-// Read GraphQL request
 $rawInput = file_get_contents('php://input');
 error_log("Raw Input: " . $rawInput);
 
-if (!$rawInput) {
-      error_log("Empty request body received");
+// Fallback to $_POST if empty (for form-data)
+if (empty($rawInput) && !empty($_POST)) {
+      $rawInput = json_encode($_POST);
+}
+
+if (empty($rawInput)) {
+      error_log("Empty request body received. Headers: " . print_r(getallheaders(), true));
       http_response_code(400);
       echo json_encode(['error' => 'Empty request body']);
       exit;
@@ -89,12 +115,10 @@ error_log("GraphQL Query: " . ($query ?? 'NULL'));
 
 // Validate the query
 if (empty($query)) {
-      http_response_code(400); // Bad Request
+      http_response_code(400);
       echo json_encode(['error' => 'No GraphQL query provided']);
       exit;
 }
-
-
 
 // Execute GraphQL query
 $variableValues = $input['variables'] ?? [];
