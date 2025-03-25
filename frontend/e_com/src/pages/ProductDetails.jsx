@@ -70,87 +70,75 @@ const ProductDetails = ({ onAddToCart, setActiveCategory, products }) => {
 
   return (
     <div className="flex justify-center items-center p-5 mt-10">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-20 bg-white w-full max-w-6xl">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 bg-white w-full max-w-6xl p-5">
         {/* Image Gallery */}
-        <div className="flex flex-col md:flex-row gap-4" data-testid="product-gallery">
+        <div className="flex flex-col md:flex-row gap-4 w-full">
           {/* Thumbnails */}
-          <div className="flex flex-row md:flex-col space-x-3 md:space-x-0 md:space-y-3">
+          <div className="flex flex-row md:flex-col space-x-3 md:space-x-0 md:space-y-3 overflow-x-auto md:overflow-visible">
             {selectedProduct.gallery.map((image, index) => (
               <img
                 key={index}
                 src={image.image_url}
                 alt={`Thumbnail ${index}`}
-                className={`w-20 h-20 object-contain rounded cursor-pointer transition-transform transform hover:scale-110 ${
-                  index === currentImageIndex ? 'border-2 border-green-600' : ''
-                }`}
+                className={`w-16 md:w-20 h-16 md:h-20 object-contain rounded cursor-pointer transition-transform transform hover:scale-110 ${index === currentImageIndex ? 'border-2 border-green-600' : ''
+                  }`}
                 onClick={() => setCurrentImageIndex(index)}
               />
             ))}
           </div>
-
-          {/* Main Image with Navigation Arrows */}
-          <div className="relative w-full" style={{ maxWidth: '976px', maxHeight: '541px' }}>
+  
+          {/* Main Image */}
+          <div className="relative w-full">
             <img
               src={selectedProduct.gallery[currentImageIndex].image_url}
               alt={selectedProduct.name}
-              className="w-full h-full object-contain"
+              className="w-full h-auto object-contain max-h-96"
             />
-            {/* Left Arrow */}
+            {/* Navigation Arrows */}
             <button
               onClick={handlePrevImage}
-              className="absolute left-0 w-[32px] h-[32px] top-1/2 bg-black text-white  hover:bg-opacity-75"
+              className="absolute left-2 top-1/2 bg-black text-white w-8 h-8 flex items-center justify-center rounded-full shadow-md hover:bg-opacity-75"
             >
               &#10094;
             </button>
-            {/* Right Arrow */}
             <button
               onClick={handleNextImage}
-              className="absolute right-0 top-1/2 w-[32px] h-[32px] bg-black text-white hover:bg-opacity-75"
+              className="absolute right-2 top-1/2 bg-black text-white w-8 h-8 flex items-center justify-center rounded-full shadow-md hover:bg-opacity-75"
             >
               &#10095;
             </button>
           </div>
         </div>
-
+  
         {/* Product Details */}
-        <div className="flex flex-col w-[500px] space-y-4">
-          <h2 className="text-3xl font-semibold text-gray-800">{selectedProduct.name}</h2>
-
+        <div className="flex flex-col w-full space-y-4">
+          <h2 className="text-2xl md:text-3xl font-semibold text-gray-800">{selectedProduct.name}</h2>
+  
           {/* Attributes */}
           {selectedProduct.attributes.map((attr) => {
             const attributeNameKebabCase = attr.name.toLowerCase().replace(/\s+/g, '-');
             return (
               <div key={attr.id} className="mb-3" data-testid={`product-attribute-${attributeNameKebabCase}`}>
-                <h3 className="text-lg mb-2 font-medium text-gray-700" style={{ textTransform: 'uppercase' }}>
-                  {attr.name}:
-                </h3>
-                <div className="flex gap-1">
+                <h3 className="text-md md:text-lg mb-2 font-medium text-gray-700 uppercase">{attr.name}:</h3>
+                <div className="flex flex-wrap gap-2">
                   {attr.items.map((item) => (
                     <button
                       key={item.id}
-                      className={`flex items-center justify-center border transition-all duration-200 ${
-                        selectedAttributes[attr.id] === item.id
+                      className={`border transition-all duration-200 text-sm md:text-base p-2 flex items-center justify-center ${selectedAttributes[attr.id] === item.id
                           ? attr.name === 'Color'
                             ? 'border-green-600'
-                            : 'bg-black  border-black text-white'
+                            : 'bg-black border-black text-white'
                           : 'border-gray-300 hover:bg-gray-200'
-                      }`}
+                        }`}
                       style={{
-                        width: attr.name === 'Capacity' ? '65px' : attr.name === 'Color' ? '28px' : attr.name === 'Size' ? '50px': '63px',
+                        width: attr.name === 'Capacity' ? '65px' : attr.name === 'Color' ? '28px' : '50px',
                         height: attr.name === 'Color' ? '30px' : '45px',
                       }}
                       onClick={() => handleAttributeSelect(attr.id, item.id)}
-                      data-testid={`product-attribute-${attributeNameKebabCase}-${item.value.replace(/\s+/g, '')}`} 
+                      data-testid={`product-attribute-${attributeNameKebabCase}-${item.value.replace(/\s+/g, '')}`}
                     >
                       {attr.name === 'Color' ? (
-
-
-                        
-                        
-                        <span
-                          className="w-6 h-6 inline-block"
-                          style={{ backgroundColor: item.value }}
-                        ></span>
+                        <span className="w-6 h-6 inline-block" style={{ backgroundColor: item.value }}></span>
                       ) : (
                         item.value || 'N/A'
                       )}
@@ -160,44 +148,37 @@ const ProductDetails = ({ onAddToCart, setActiveCategory, products }) => {
               </div>
             );
           })}
-
+  
           {/* Pricing */}
           <div>
-            <h3 className="text-lg font-medium text-gray-700" style={{ textTransform: 'uppercase' }}>Price:</h3>
+            <h3 className="text-md md:text-lg font-medium text-gray-700 uppercase">Price:</h3>
             {selectedProduct.prices.map((price) => (
-              <p key={price.currency.label} className="text-xl font-bold text-green-600">
+              <p key={price.currency.label} className="text-lg md:text-xl font-bold text-green-600">
                 {price.currency.symbol}{price.amount.toFixed(2)}
               </p>
             ))}
           </div>
-
+  
           {/* Add to Cart Button */}
           <button
             onClick={handleAddToCart}
             disabled={!allAttributesSelected || !selectedProduct.inStock}
-            className={`w-60 py-3 font-medium text-white transition-all duration-200 ${
-              allAttributesSelected && selectedProduct.inStock ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-300 cursor-not-allowed'
-            }`}
-            style={{ textTransform: 'uppercase' }}
+            className={`w-full md:w-60 py-3 font-medium text-white transition-all duration-200 ${allAttributesSelected && selectedProduct.inStock ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-300 cursor-not-allowed'
+              }`}
             data-testid="add-to-cart"
           >
             {!selectedProduct.inStock ? 'Out of Stock' : 'Add to Cart'}
           </button>
-
+  
           {/* Description */}
-          <div className="mt-4" data-testid="product-description">
-            <div
-              className="description text-gray-600 overflow-y-auto"
-              style={{ maxHeight: '200px' }}
-            >
-              {parse(selectedProduct.description)}
-            </div>
+          <div className="mt-4 max-h-40 overflow-y-auto text-gray-600 text-sm md:text-base" data-testid="product-description">
+            {parse(selectedProduct.description)}
           </div>
         </div>
       </div>
     </div>
   );
-};
+}
 
 ProductDetails.propTypes = {
   onAddToCart: PropTypes.func.isRequired,
