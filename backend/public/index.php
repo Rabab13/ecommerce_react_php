@@ -1,65 +1,62 @@
 <?php
 
+// First, handle the redirect without any PHP processing
+if ($_SERVER['REQUEST_URI'] === '/' || $_SERVER['REQUEST_URI'] === '/index.html') {
+      header('Location: /graphql', true, 301);
+      exit;
+}
+
+// Only proceed with the GraphQL setup if we're actually on the /graphql endpoint
 use Dotenv\Dotenv;
 use App\Database\Database;
 use App\GraphQL\Schema;
 use GraphQL\GraphQL;
 
-// Autoload dependencies
-require_once __DIR__ . '/../vendor/autoload.php';
+if ($_SERVER['REQUEST_URI'] === '/graphql') {
 
-// Load .env config
-$dotenv = Dotenv::createImmutable(__DIR__ . '/..');
-$dotenv->load();
+      // Autoload dependencies
+      require_once __DIR__ . '/../vendor/autoload.php';
 
-// Get the request path and method
-$requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$requestMethod = $_SERVER['REQUEST_METHOD'];
+      // Load .env config
+      $dotenv = Dotenv::createImmutable(__DIR__ . '/..');
+      $dotenv->load();
 
-// Handle root path redirect (GET only)
-if (($requestUri === '/' || $requestUri === '/index.html') && $requestMethod === 'GET') {
-      header('Location: /graphql', true, 301);
-      exit;
-}
+      // Enhanced CORS handling
+      $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+      $allowedOrigins = [
+            'https://rococo-puppy-56bad8.netlify.app',
+            'http://localhost:5173',
+            'https://ecommercereactphp-production.up.railway.app'
+      ];
 
-// Enhanced CORS handling
-$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-$allowedOrigins = [
-      'https://rococo-puppy-56bad8.netlify.app',
-      'http://localhost:5173',
-      'https://ecommercereactphp-production.up.railway.app'
-];
+      $isNetlify = preg_match('/^https:\/\/([a-z0-9\-]+\.)?netlify\.app$/', $origin);
+      $isRailway = str_contains($origin, 'up.railway.app');
+      $isAllowed = in_array($origin, $allowedOrigins, true) || $isNetlify || $isRailway;
 
-$isNetlify = preg_match('/^https:\/\/([a-z0-9\-]+\.)?netlify\.app$/', $origin);
-$isRailway = str_contains($origin, 'up.railway.app');
-$isAllowed = in_array($origin, $allowedOrigins, true) || $isNetlify || $isRailway;
+      // Handle preflight requests
+      if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+            header("Access-Control-Allow-Origin: " . ($origin ?: $allowedOrigins[0]));
+            header("Access-Control-Allow-Methods: POST, OPTIONS");
+            header("Access-Control-Allow-Headers: Content-Type, Authorization");
+            header("Access-Control-Allow-Credentials: true");
+            header("Access-Control-Max-Age: 86400");
+            http_response_code(204);
+            exit;
+      }
 
-// Handle preflight requests
-if ($requestMethod === 'OPTIONS') {
-      header("Access-Control-Allow-Origin: " . ($origin ?: $allowedOrigins[0]));
-      header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
-      header("Access-Control-Allow-Headers: Content-Type, Authorization");
-      header("Access-Control-Allow-Credentials: true");
-      header("Access-Control-Max-Age: 86400");
-      http_response_code(204);
-      exit;
-}
+      // Set CORS headers for actual requests
+      if ($isAllowed || empty($origin)) {
+            header("Access-Control-Allow-Origin: " . ($origin ?: $allowedOrigins[0]));
+            header("Access-Control-Allow-Credentials: true");
+      } else {
+            error_log("CORS rejection for origin: $origin");
+            http_response_code(403);
+            echo json_encode(['error' => 'Origin not allowed']);
+            exit;
+      }
 
-// Set CORS headers for actual requests
-if ($isAllowed || empty($origin)) {
-      header("Access-Control-Allow-Origin: " . ($origin ?: $allowedOrigins[0]));
-      header("Access-Control-Allow-Credentials: true");
-} else {
-      error_log("CORS rejection for origin: $origin");
-      http_response_code(403);
-      echo json_encode(['error' => 'Origin not allowed']);
-      exit;
-}
-
-// Handle GraphQL endpoint
-if ($requestUri === '/graphql') {
       // Only allow POST requests for GraphQL
-      if ($requestMethod !== 'POST') {
+      if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
             header('Allow: POST, OPTIONS');
             echo json_encode(['error' => 'Method not allowed. Use POST for GraphQL requests']);
@@ -132,13 +129,6 @@ if ($requestUri === '/graphql') {
       exit;
 }
 
-// Handle all other routes
-if ($requestMethod === 'GET') {
-      // For GET requests to unknown paths, you could serve documentation or a simple message
-      http_response_code(200);
-      echo "Welcome to the API. Use POST /graphql for GraphQL requests.";
-      exit;
-}
-
+// If we reach here, it's neither the root redirect nor the GraphQL endpoint
 http_response_code(404);
-echo json_encode(['error' => 'Not Found']);
+echo 'Not Found';
