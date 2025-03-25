@@ -85,13 +85,8 @@ if (!isset($input['query'])) {
       exit;
 }
 
-// Proceed with GraphQL query processing
-$graphqlQuery = $input['query'];
-error_log("GraphQL Query: " . $graphqlQuery);
-
-
-// $query = $input['query'] ?? null;
-// error_log("GraphQL Query: " . ($query ?? 'NULL'));
+$query = $input['query'] ?? null;
+error_log("GraphQL Query: " . ($query ?? 'NULL'));
 
 // Validate the query
 if (empty($query)) {
