@@ -55,14 +55,43 @@ $db = Database::getInstance()->getConnection();
 $schema = Schema::create($db);
 
 // Read GraphQL request
+// Read GraphQL request
 $rawInput = file_get_contents('php://input');
-error_log("Raw Input: " . $rawInput); // Debug the raw input
+error_log("Raw Input: " . $rawInput);
 
+if (!$rawInput) {
+      error_log("Empty request body received");
+      http_response_code(400);
+      echo json_encode(['error' => 'Empty request body']);
+      exit;
+}
+
+// Decode JSON input
 $input = json_decode($rawInput, true);
-error_log("Parsed Input: " . print_r($input, true)); // Debug the parsed input
 
-$query = $input['query'] ?? null;
-error_log("GraphQL Query: " . ($query ?? 'NULL')); // Debug the query
+if (json_last_error() !== JSON_ERROR_NONE) {
+      error_log("JSON Decode Error: " . json_last_error_msg());
+      http_response_code(400);
+      echo json_encode(['error' => 'Invalid JSON format']);
+      exit;
+}
+
+error_log("Parsed Input: " . print_r($input, true));
+
+if (!isset($input['query'])) {
+      error_log("Missing query field");
+      http_response_code(400);
+      echo json_encode(['error' => 'Missing GraphQL query']);
+      exit;
+}
+
+// Proceed with GraphQL query processing
+$graphqlQuery = $input['query'];
+error_log("GraphQL Query: " . $graphqlQuery);
+
+
+$graphqlQuery = $input['query'];
+error_log("GraphQL Query: " . $graphqlQuery);
 
 // Validate the query
 if (empty($query)) {
@@ -70,6 +99,8 @@ if (empty($query)) {
       echo json_encode(['error' => 'No GraphQL query provided']);
       exit;
 }
+
+
 
 // Execute GraphQL query
 $variableValues = $input['variables'] ?? [];
