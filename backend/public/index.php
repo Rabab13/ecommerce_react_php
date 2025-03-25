@@ -27,11 +27,17 @@ $isAllowed = in_array($origin, $allowedOrigins, true) || $isNetlify || $isRailwa
 // Handle preflight requests
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
       header("Access-Control-Allow-Origin: " . ($origin ?: $allowedOrigins[0]));
-      header("Access-Control-Allow-Methods: POST, OPTIONS");
+      header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
       header("Access-Control-Allow-Headers: Content-Type, Authorization");
       header("Access-Control-Allow-Credentials: true");
       header("Access-Control-Max-Age: 86400");
       http_response_code(204);
+      exit;
+}
+
+// Handle redirect for root path
+if ($_SERVER['REQUEST_URI'] === '/' || $_SERVER['REQUEST_URI'] === '/index.html') {
+      header('Location: https://ecommercereactphp-production.up.railway.app/graphql', true, 301);
       exit;
 }
 
@@ -46,21 +52,22 @@ if ($isAllowed || empty($origin)) {
       exit;
 }
 
-// Only allow POST requests for GraphQL
-$requestMethod = $_SERVER['REQUEST_METHOD'];
-if ($requestMethod !== 'POST') {
+// Only allow POST requests for GraphQL endpoint
+if ($_SERVER['REQUEST_URI'] === '/graphql' && $_SERVER['REQUEST_METHOD'] !== 'POST') {
       http_response_code(405);
       header('Allow: POST, OPTIONS');
       echo json_encode(['error' => 'Method not allowed. Use POST for GraphQL requests']);
       exit;
 }
 
-// Verify content type
-$contentType = $_SERVER['CONTENT_TYPE'] ?? '';
-if (strpos($contentType, 'application/json') === false) {
-      http_response_code(415);
-      echo json_encode(['error' => 'Unsupported Media Type. Use application/json']);
-      exit;
+// Verify content type for GraphQL endpoint
+if ($_SERVER['REQUEST_URI'] === '/graphql') {
+      $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+      if (strpos($contentType, 'application/json') === false) {
+            http_response_code(415);
+            echo json_encode(['error' => 'Unsupported Media Type. Use application/json']);
+            exit;
+      }
 }
 
 // Load dependencies
@@ -77,46 +84,52 @@ try {
       exit;
 }
 
-// Create GraphQL schema
-$schema = Schema::create($db);
+// Only process GraphQL requests for the /graphql endpoint
+if ($_SERVER['REQUEST_URI'] === '/graphql') {
+      // Read GraphQL request body
+      $rawInput = file_get_contents('php://input');
+      error_log("Raw Input: " . $rawInput);
 
-// Read GraphQL request body
-$rawInput = file_get_contents('php://input');
-error_log("Raw Input: " . $rawInput);
+      if (empty($rawInput)) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Empty request body']);
+            exit;
+      }
 
-if (empty($rawInput)) {
-      http_response_code(400);
-      echo json_encode(['error' => 'Empty request body']);
+      $input = json_decode($rawInput, true);
+      if (json_last_error() !== JSON_ERROR_NONE) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Invalid JSON format']);
+            exit;
+      }
+
+      if (!isset($input['query'])) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Missing GraphQL query']);
+            exit;
+      }
+
+      $query = $input['query'];
+      $variables = $input['variables'] ?? [];
+
+      // Execute GraphQL query
+      try {
+            $schema = Schema::create($db);
+            $result = GraphQL::executeQuery($schema, $query, null, null, $variables);
+            $output = $result->toArray();
+      } catch (Exception $e) {
+            http_response_code(500);
+            $output = [
+                  'errors' => [['message' => $e->getMessage()]]
+            ];
+      }
+
+      // Output response
+      header('Content-Type: application/json');
+      echo json_encode($output);
       exit;
 }
 
-$input = json_decode($rawInput, true);
-if (json_last_error() !== JSON_ERROR_NONE) {
-      http_response_code(400);
-      echo json_encode(['error' => 'Invalid JSON format']);
-      exit;
-}
-
-if (!isset($input['query'])) {
-      http_response_code(400);
-      echo json_encode(['error' => 'Missing GraphQL query']);
-      exit;
-}
-
-$query = $input['query'];
-$variables = $input['variables'] ?? [];
-
-// Execute GraphQL query
-try {
-      $result = GraphQL::executeQuery($schema, $query, null, null, $variables);
-      $output = $result->toArray();
-} catch (Exception $e) {
-      http_response_code(500);
-      $output = [
-            'errors' => [['message' => $e->getMessage()]]
-      ];
-}
-
-// Output response
-header('Content-Type: application/json');
-echo json_encode($output);
+// Handle other routes
+http_response_code(404);
+echo json_encode(['error' => 'Not Found']);
