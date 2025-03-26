@@ -54,6 +54,7 @@ if ($_SERVER['REQUEST_URI'] === '/graphql') {
             echo json_encode(['error' => 'Origin not allowed']);
             exit;
       }
+      error_log("Request Method: " . $_SERVER['REQUEST_METHOD']);
 
       // Only allow POST requests for GraphQL
       if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
