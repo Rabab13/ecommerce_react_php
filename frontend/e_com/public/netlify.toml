@@ -1,8 +1,16 @@
-[functions]
-  directory = "netlify/functions"
+[build]
+  functions = "netlify/functions"
 
 [[redirects]]
   from = "/graphql"
   to = "/.netlify/functions/graphql"
   status = 200
   force = true
+
+# Add these CORS headers for all responses
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type"
