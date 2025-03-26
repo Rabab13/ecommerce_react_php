@@ -40,6 +40,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
       exit();
 }
 
+// Handle GET requests with helpful message
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+      header('Content-Type: application/json');
+      echo json_encode([
+            'message' => 'Welcome to the GraphQL API',
+            'instructions' => [
+                  'This endpoint requires POST requests with JSON payload',
+                  'Example:',
+                  [
+                        'method' => 'POST',
+                        'headers' => ['Content-Type' => 'application/json'],
+                        'body' => [
+                              'query' => '{ yourQuery { field1 field2 } }',
+                              'variables' => '{}'
+                        ]
+                  ],
+                  'For Netlify integration, ensure your frontend is configured to send POST requests',
+                  'Allowed origins: ' . implode(', ', $allowed_origins)
+            ]
+      ]);
+      exit;
+}
+
 // Load App Dependencies
 require_once __DIR__ . '/../src/Database/Database.php';
 require_once __DIR__ . '/../src/GraphQL/Schema.php';
@@ -49,31 +72,60 @@ use App\GraphQL\Schema;
 use GraphQL\GraphQL;
 
 // Get DB connection (Singleton)
-$db = Database::getInstance()->getConnection();
-
-// Create GraphQL schema
-$schema = Schema::create($db);
+try {
+      $db = Database::getInstance()->getConnection();
+} catch (Exception $e) {
+      http_response_code(500);
+      echo json_encode(['error' => 'Database connection failed: ' . $e->getMessage()]);
+      exit;
+}
 
 // Read GraphQL request
 $rawInput = file_get_contents('php://input');
-error_log("Raw Input: " . $rawInput); // Debug the raw input
+error_log("Raw Input: " . $rawInput);
+
+// Validate we have input
+if (empty($rawInput)) {
+      http_response_code(400);
+      echo json_encode([
+            'error' => 'Empty request body',
+            'solution' => 'Send a POST request with a JSON payload containing your GraphQL query'
+      ]);
+      exit;
+}
 
 $input = json_decode($rawInput, true);
-error_log("Parsed Input: " . print_r($input, true)); // Debug the parsed input
+
+// Validate JSON
+if (json_last_error() !== JSON_ERROR_NONE) {
+      http_response_code(400);
+      echo json_encode([
+            'error' => 'Invalid JSON format',
+            'solution' => 'Ensure your request body contains valid JSON'
+      ]);
+      exit;
+}
 
 $query = $input['query'] ?? null;
-error_log("GraphQL Query: " . ($query ?? 'NULL')); // Debug the query
 
 // Validate the query
 if (empty($query)) {
-      http_response_code(400); // Bad Request
-      echo json_encode(['error' => 'No GraphQL query provided']);
+      http_response_code(400);
+      echo json_encode([
+            'error' => 'No GraphQL query provided',
+            'solution' => 'Include a "query" field in your JSON payload',
+            'example' => [
+                  'query' => '{ products { id name } }',
+                  'variables' => '{}'
+            ]
+      ]);
       exit;
 }
 
 // Execute GraphQL query
 $variableValues = $input['variables'] ?? [];
 try {
+      $schema = Schema::create($db);
       $result = GraphQL::executeQuery($schema, $query, null, null, $variableValues);
       $output = $result->toArray();
 } catch (\Exception $e) {
