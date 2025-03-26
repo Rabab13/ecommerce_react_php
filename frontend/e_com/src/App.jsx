@@ -16,13 +16,16 @@ const App = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
 
   // Fetch categories
-  const { loading: categoriesLoading, error: categoriesError, data: categoriesData } = useQuery(GET_CATEGORIES);
+  const { loading: categoriesLoading, error: categoriesError, data: categoriesData } = useQuery(GET_CATEGORIES,
+    {fetchPolicy: 'network-only',}
+  );
 
   // Fetch products based on the active category
   const { loading: productsLoading, error: productsError, data: productsData } = useQuery(GET_PRODUCTS, {
     variables: {
       categoryId: activeCategory === 'all' ? null : categoriesData?.categories.find((cat) => cat.name.toLowerCase() === activeCategory.toLowerCase())?.id || null,
       categoryName: activeCategory === 'all' ? null : activeCategory,
+      fetchPolicy: 'network-only',
     },
     skip: !categoriesData,
   });
