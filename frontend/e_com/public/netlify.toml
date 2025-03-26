@@ -1,6 +1,8 @@
+[functions]
+  directory = "netlify/functions"
+
 [[redirects]]
   from = "/graphql"
-  to = "https://ecommercereactphp-production.up.railway.app/graphql"
+  to = "/.netlify/functions/graphql"
   status = 200
   force = true
-  headers = { "Access-Control-Allow-Methods" = "POST, OPTIONS" }

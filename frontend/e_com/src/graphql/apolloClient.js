@@ -3,6 +3,8 @@ import { setContext } from '@apollo/client/link/context';
 
 const httpLink = createHttpLink({
   uri: 'https://ecommercereactphp-production.up.railway.app/graphql',
+  fetchOptions: {
+    method: 'POST',
 });
 
 const authLink = setContext((_, { headers }) => {
