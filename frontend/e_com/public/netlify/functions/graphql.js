@@ -1,6 +1,6 @@
-const fetch = require("node-fetch");
+import fetch from "node-fetch";
 
-exports.handler = async (event) => {
+export const handler = async (event) => {
     if (event.httpMethod !== "POST") {
         return {
             statusCode: 405,
@@ -23,6 +23,7 @@ exports.handler = async (event) => {
             body: JSON.stringify(data),
         };
     } catch (error) {
+        console.error("Error occurred:", error);
         return {
             statusCode: 500,
             body: JSON.stringify({ error: "Internal server error" }),
