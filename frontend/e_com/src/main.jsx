@@ -7,7 +7,7 @@ import App from './App';
 import './index.css';
 
 const client = new ApolloClient({
-  uri: 'https://ecommercereactphp-production.up.railway.app/graphql', // Replace with your endpoint
+  uri: 'https://aa42-196-134-167-211.ngrok-free.app/', // Replace with your endpoint
   cache: new InMemoryCache(),
 });
 
