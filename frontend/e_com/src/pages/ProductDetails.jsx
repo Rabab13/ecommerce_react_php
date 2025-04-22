@@ -124,7 +124,7 @@ const ProductDetails = ({ onAddToCart, setActiveCategory, products }) => {
                   {attr.items.map((item) => (
                     <button
                       key={item.id}
-                      className={`border transition-all duration-200 text-sm md:text-base p-2 flex items-center justify-center ${selectedAttributes[attr.id] === item.id
+                      className={`border transition-all duration-200 text-sm md:text-base  flex items-center justify-center ${selectedAttributes[attr.id] === item.id
                           ? attr.name === 'Color'
                             ? 'border-green-600'
                             : 'bg-black border-black text-white'
