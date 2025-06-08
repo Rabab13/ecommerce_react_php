@@ -11,7 +11,7 @@ export default defineConfig({
 
     proxy: {
       '/graphql.php': {
-        target: 'https://4d01-196-134-111-102.ngrok-free.app', //updated ngrok URL
+        target: 'https://b5ce-196-134-152-36.ngrok-free.app', //updated ngrok URL
         changeOrigin: true,
         secure: false,
         configure: (proxy) => {
