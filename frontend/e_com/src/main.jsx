@@ -7,7 +7,7 @@ import App from './App';
 import './index.css';
 
 const client = new ApolloClient({
-  uri: 'https://b5ce-196-134-152-36.ngrok-free.app',  //updated ngrok URL
+  uri: 'https://f8ce-196-134-174-68.ngrok-free.app',  //updated ngrok URL
   cache: new InMemoryCache(),
 });
 
