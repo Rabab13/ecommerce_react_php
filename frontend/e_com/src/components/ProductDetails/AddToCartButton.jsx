@@ -9,6 +9,8 @@ const AddToCartButton = ({
 
   return (
     <button
+      data-testid="add-to-cart" 
+      aria-disabled={isDisabled} 
       onClick={onAddToCart}
       disabled={isDisabled}
       className={`font-raleway font-semibold text-[16px] leading-[120%] text-center uppercase flex items-center justify-center w-full md:w-72 py-3 text-white transition-all duration-200 ${
@@ -16,8 +18,7 @@ const AddToCartButton = ({
           ? 'bg-gray-400 cursor-not-allowed'
           : 'bg-green-600 hover:bg-green-700'
       }`}
-      data-testid="add-to-cart"  // Add this line
-      aria-disabled={isDisabled}  // For better accessibility
+      // 
     >
       {!inStock ? 'Out of Stock' : 'Add to Cart'}
     </button>
