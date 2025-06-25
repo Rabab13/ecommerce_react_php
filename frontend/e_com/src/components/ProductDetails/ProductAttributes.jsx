@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 
 const ProductAttributes = ({ attributes, selectedAttributes, onSelectAttribute }) => {
-
   const createTestId = (base, value = '', isSelected = false) => {
     const cleanBase = base.toLowerCase().replace(/\s+/g, '-');
     const cleanValue = value.toLowerCase().replace(/\s+/g, '-');
