@@ -4,27 +4,25 @@ const ProductAttributes = ({ attributes, selectedAttributes, onSelectAttribute }
   return (
     <div className="space-y-4">
       {attributes.map((attr) => {
-        const kebab = attr.name.toLowerCase().replace(/\s+/g, '-');
+      const attributeTestId = `product-attribute-${attr.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z-]/g, '')}`;
 
         return (
           <div key={attr.id} data-testid={`product-attribute-${kebab}`}>
             <h3 className="font-roboto-condensed font-bold uppercase">{attr.name}:</h3>
             <div className="text-lg font-roboto-condensed p-1 flex gap-2 flex-wrap">
               {attr.items.map((item) => {
-                const isSelected = selectedAttributes[attr.id] === item.id;
-
+                    const isSelected = selectedAttributes[attr.id] === item.id;
+                    const itemTestId = `${attributeTestId}-${item.value.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z-]/g, '')}`;
                 if (attr.name === 'Color') {
                   return (
                     <div
                       key={item.id}
                       onClick={() => onSelectAttribute(attr.id, item.id)}
                       className="relative w-9 h-9 cursor-pointer"
-                      data-testid={`product-attribute-${kebab}-${item.value}${
-                        isSelected ? '-selected' : ''
-                      }`}
+                      data-testid={isSelected ? `${itemTestId}-selected` : itemTestId}
                     >
                       <div
-                        className={`absolute    inset-0 rounded-sm border ${
+                        className={`absolute  inset-0 rounded-sm border ${
                           isSelected ? 'border-[#5ECE7B]' : 'border-transparent'
                         }`}
                       />
