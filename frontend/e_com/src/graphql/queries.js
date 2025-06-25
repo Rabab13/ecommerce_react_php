@@ -45,6 +45,7 @@ export const GET_PRODUCTS = gql`
     }
   }
 `;
+
 export const INSERT_ORDER_MUTATION = gql`
   mutation InsertOrder($input: InsertOrderInput!) {
     insertOrder(input: $input) {
@@ -61,6 +62,42 @@ export const INSERT_ORDER_MUTATION = gql`
           value
         }
       }
+    }
+  }
+`;
+export const GET_PRODUCT_BY_ID = gql`
+  query GetProductById($id: ID!) {
+    product(id: $id) {
+       id
+      name
+      inStock
+      gallery {
+        id
+        image_url
+      }
+      description
+      category {
+        id
+        name
+      }
+      attributes {
+        id
+        name
+        type
+        items {
+          id
+          displayValue
+          value
+        }
+      }
+      prices {
+        amount
+        currency {
+          label
+          symbol
+        }
+      }
+      brand
     }
   }
 `;

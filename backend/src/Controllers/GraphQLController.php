@@ -29,6 +29,9 @@ class GraphQLController
             if (!isset($input['query'])) {
                 throw new RuntimeException('Missing "query" key in the request body.');
             }
+            error_log(print_r($schema->getQueryType()->getFields(), true));
+            error_log("GraphQL query: " . $input['query']); // Log the query
+            error_log("GraphQL variables: " . json_encode($input['variables'] ?? null)); // Log the variables
 
             // Parse the GraphQL query
             $query = $input['query'];

@@ -1,14 +1,15 @@
 import  { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 
 const ProductCard = ({ product, onQuickShop }) => {
-  const { name, prices, gallery, inStock, attributes } = product;
+  const {id, name, prices, gallery, inStock, attributes } = product;
   const [isHovered, setIsHovered] = useState(false);
   const navigate = useNavigate();
 
   if (!product) {
-    return null; // Return null if no product is provided
+    return null; 
   }
 
   const handleClick = () => {
@@ -31,7 +32,8 @@ const ProductCard = ({ product, onQuickShop }) => {
   };
   
   const handleQuickShop = (e) => {
-    e.stopPropagation(); // Prevent navigation to the product page
+    e.stopPropagation();
+    e.preventDefault(); 
   
     if (typeof onQuickShop === 'function') {
       // Generate default attributes for this product
@@ -52,9 +54,10 @@ const ProductCard = ({ product, onQuickShop }) => {
   };
 
   return (
-    <div
+    <Link
+      to={`/product/${id}`}
       data-testid={`product-${name.toLowerCase().replace(/\s+/g, '-')}`}
-      className="relative p-4 w-[386px] h-[444px] bg-white hover:shadow-[0_4px_12px_rgba(0,0,0,0.1)] transition-transform transform hover:scale-105"
+      className="font-raleway relative p-4 w-[386px] h-[444px] bg-white hover:shadow-[0_4px_12px_rgba(0,0,0,0.1)] transition-transform transform hover:scale-105"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={handleClick}
@@ -71,7 +74,7 @@ const ProductCard = ({ product, onQuickShop }) => {
 
         {!inStock && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-lg font-semibold text-gray-500">OUT OF STOCK</span>
+            <span className="text-lg font-normal text-gray-500">OUT OF STOCK</span>
           </div>
         )}
 
@@ -99,18 +102,18 @@ const ProductCard = ({ product, onQuickShop }) => {
         )}
       </div>
 
-      <div className="mt-5 flex justify-between items-center">
+      <div className="font-raleway mt-5 flex justify-between items-center">
         <div className="text-left">
-          <h3 className="text-md font-medium text-gray-800">{name}</h3>
+          <h3 className="font-light text-md font-medium text-gray-800">{name}</h3>
           {/* Price with gray overlay for out-of-stock products */}
           <div className={`${!inStock ? 'bg-gray-50 bg-opacity-70' : ''}`}>
-            <p className={`text-lg font-semibold ${!inStock ? 'text-gray-500' : ''}`}>
+            <p className={`font-normal text-lg  ${!inStock ? 'text-gray-500' : ''}`}>
               {prices?.[0]?.amount ? `$${prices[0].amount.toFixed(2)}` : 'N/A'}
             </p>
           </div>
         </div>
       </div>
-    </div>
+      </Link>
   );
 };
 

@@ -7,7 +7,7 @@ use GraphQL\Type\Definition\Type;
 use App\Models\Product;
 use App\GraphQL\Types\CategoryType;
 use App\GraphQL\Types\AttributeSetType;
-use App\GraphQL\Types\GalleryType; // Import GalleryType
+use App\GraphQL\Types\PriceType;
 
 class ProductType extends ObjectType
 {
@@ -16,7 +16,6 @@ class ProductType extends ObjectType
       public function __construct(
             CategoryType $categoryType,
             AttributeSetType $attributeSetType,
-            GalleryType $galleryType,
             Product $productModel
       ) {
             $this->productModel = $productModel;
@@ -34,7 +33,7 @@ class ProductType extends ObjectType
                               'resolve' => fn($product) => $this->productModel->getCategoryByProductId($product['id']),
                         ],
                         'attributes' => [
-                              'type' => Type::listOf($attributeSetType), // Use AttributeSetType
+                              'type' => Type::listOf($attributeSetType),
                               'resolve' => fn($product) => $this->productModel->getAttributesByProductId($product['id']),
                         ],
                         'prices' => [
@@ -42,7 +41,18 @@ class ProductType extends ObjectType
                               'resolve' => fn($product) => $this->productModel->getPricesByProductId($product['id']),
                         ],
                         'gallery' => [
-                              'type' => Type::listOf($galleryType),
+                              'type' => Type::listOf(new ObjectType([
+                                    'name' => 'Gallery',
+                                    'description' => 'Gallery images for a product',
+                                    'fields' => [
+                                          'id' => ['type' => Type::id()],
+                                          'image_url' => ['type' => Type::string()],
+                                          '__typename' => [
+                                                'type' => Type::string(),
+                                                'resolve' => fn() => 'Gallery',
+                                          ],
+                                    ],
+                              ])),
                               'resolve' => fn($product) => $this->productModel->getGalleryByProductId($product['id']),
                         ],
                         'brand' => [

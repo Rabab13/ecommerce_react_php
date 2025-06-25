@@ -11,7 +11,7 @@ export default defineConfig({
 
     proxy: {
       '/graphql.php': {
-        target: 'https://ecommercereactphp-production.up.railway.app/graphql',
+        target: 'https://8dde-102-41-37-62.ngrok-free.app',
         changeOrigin: true,
         secure: false,
         configure: (proxy) => {

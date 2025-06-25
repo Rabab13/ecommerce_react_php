@@ -28,14 +28,14 @@ const Header = ({
 
   return (
     <header className="w-full bg-white fixed  top-0 left-0 z-50 shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 pt-2 flex items-center justify-between relative">
-        <nav className="flex space-x-4 sm:space-x-8">
+      <div className="max-w-7xl mx-auto h-20 px-4  bg-pt-2 flex items-center justify-between relative">
+        <nav className="flex space-x-4  sm:space-x-8">
           {/* ALL link */}
           <Link
             to="/all"
-            className={`text-base sm:text-lg pb-2 transition-colors uppercase ${
+            className={`font-raleway text-base sm:text-lg pt-4 pb-9 transition-colors uppercase ${
               normalizedActiveCategory === 'all'
-                ? 'text-green-500 border-b-2 border-green-500'
+                ? 'font-semibold gap-6 text-green-500 border-b-2  border-green-500'
                 : 'text-gray-700 hover:text-green-500'
             }`}
             data-testid={
@@ -55,9 +55,9 @@ const Header = ({
               <Link
                 key={category.id}
                 to={`/${category.name.toLowerCase()}`}
-                className={`text-base sm:text-lg pb-2 transition-colors uppercase ${
+                className={`font-raleway text-base sm:text-lg pt-4 pb-9 transition-colors uppercase ${
                   category.name.toLowerCase() === normalizedActiveCategory
-                    ? 'text-green-500 border-b-2 border-green-500'
+                    ? 'font-semibold    text-green-500 border-b-2  border-green-500'
                     : 'text-gray-700 hover:text-green-500'
                 }`}
                 onClick={() => handleCategoryClick(category.name)}

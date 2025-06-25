@@ -29,5 +29,11 @@ docker-compose.dev.yml
 docker-compose.prod.yml
 
 
+# Environment files
+.env
+.env.docker 
+# Composer dependencies
+/vendor/
+
 
 

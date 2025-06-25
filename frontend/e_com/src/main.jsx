@@ -5,9 +5,20 @@ import { BrowserRouter } from 'react-router-dom';
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 import App from './App';
 import './index.css';
+import '@fontsource/raleway/400.css';
+import '@fontsource/raleway/700.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto-condensed/400.css';
+import "@fontsource/roboto/300.css";
+import "@fontsource/roboto/500.css";
+import "@fontsource/roboto/700.css";
+import '@fontsource/source-sans-pro'; 
+import '@fontsource/source-sans-pro/400.css'; 
+import '@fontsource/source-sans-pro/600.css'; 
+import '@fontsource/source-sans-pro/700.css';
 
 const client = new ApolloClient({
-  uri: 'https://ecommercereactphp-production.up.railway.app/graphql', // Replace with your endpoint
+  uri: 'https://8dde-102-41-37-62.ngrok-free.app', 
   cache: new InMemoryCache(),
 });
 

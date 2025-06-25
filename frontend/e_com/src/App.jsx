@@ -3,7 +3,7 @@ import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import Header from './pages/Header';
 import ProductList from './pages/ProductList';
 import ProductDetails from './pages/ProductDetails';
-import CartOverlay from './components/CartOverlay';
+import CartOverlay from './components/Cart/CartOverlay';
 import { GET_PRODUCTS, GET_CATEGORIES } from './graphql/queries';
 import { useQuery } from '@apollo/client';
 
@@ -16,14 +16,15 @@ const App = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
 
   // Fetch categories
-  const { loading: categoriesLoading, error: categoriesError, data: categoriesData } = useQuery(GET_CATEGORIES,
+  const { data: categoriesData } = useQuery(GET_CATEGORIES,
     {fetchPolicy: 'network-only',}
   );
 
   // Fetch products based on the active category
   const { loading: productsLoading, error: productsError, data: productsData } = useQuery(GET_PRODUCTS, {
     variables: {
-      categoryId: activeCategory === 'all' ? null : categoriesData?.categories.find((cat) => cat.name.toLowerCase() === activeCategory.toLowerCase())?.id || null,
+      categoryId: activeCategory === 'all' ?
+       null : categoriesData?.categories.find((cat) => cat?.name?.toLowerCase() === activeCategory?.toLowerCase())?.id || null,
       categoryName: activeCategory === 'all' ? null : activeCategory,
       fetchPolicy: 'network-only',
     },
@@ -31,14 +32,17 @@ const App = () => {
   });
 
   // Load/save cart items from/to local storage
-  useEffect(() => {
-    const savedCart = localStorage.getItem('cartItems');
-    if (savedCart) setCartItems(JSON.parse(savedCart));
-  }, []);
+ useEffect(() => {
+  const storedCart = localStorage.getItem('cartItems');
+  if (storedCart) {
+    setCartItems(JSON.parse(storedCart));
+  }
+}, []);
 
-  useEffect(() => {
-    localStorage.setItem('cartItems', JSON.stringify(cartItems));
-  }, [cartItems]);
+
+ useEffect(() => {
+  localStorage.setItem('cartItems', JSON.stringify(cartItems));
+}, [cartItems]);
 
   // Update active category based on route
   useEffect(() => {
@@ -83,8 +87,6 @@ const App = () => {
     }
   };
 
-  if (categoriesLoading || productsLoading) return <p>Loading...</p>;
-  if (categoriesError || productsError) return <p>Error loading data. Please try again later.</p>;
 
   const products = productsData?.productsByCategory || [];
   const categories = categoriesData?.categories || [];
@@ -104,49 +106,45 @@ const App = () => {
 
       <main className="max-w-7xl mx-auto p-4 pt-24">
         <Routes>
-          <Route
-            path="/"
-            element={
-              <>
-                <h1 className="text-2xl mb-4">ALL</h1>
-                {products.length === 0 ? (
-                  <p>No products available.</p>
-                ) : (
-                  <ProductList 
-                    products={products} 
-                    onQuickShop={handleAddToCart} 
-                  />
-                )}
-              </>
-            }
-          />
-          {categories.map((category) => (
-            <Route
-              key={category.id}
-              path={`/${category.name}`}
-              element={
-                <>
-                  <h1 className="text-2xl mb-5">{category.name.toUpperCase()}</h1>
-                  <ProductList
-                    products={products}
-                    onQuickShop={handleAddToCart}
-                    onAddToCart={handleAddToCart}
-                  />
-                </>
-              }
-            />
-          ))}
-          <Route
-            path="/product/:id"
-            element={
-              <ProductDetails
-                setActiveCategory={setActiveCategory}
-                onAddToCart={handleAddToCart}
-                products={products}
-              />
-            }
-          />
-        </Routes>
+  <Route
+    path="/"
+    element={
+      <ProductList
+        products={products}
+        loading={productsLoading}
+        error={productsError}
+        onQuickShop={handleAddToCart}
+        category="all"
+      />
+    }
+  />
+  {categories.map((category) => (
+    <Route
+      key={category.id}
+      path={`/${category.name}`}
+      element={
+        <ProductList
+          products={products}
+          loading={productsLoading}
+          error={productsError}
+          onQuickShop={handleAddToCart}
+          category={category.name}
+        />
+      }
+    />
+  ))}
+  <Route
+    path="/product/:id"
+    element={
+      <ProductDetails
+        setActiveCategory={setActiveCategory}
+        onAddToCart={handleAddToCart}
+        products={products}
+      />
+    }
+  />
+</Routes>
+
       </main>
 
       {/* Cart Overlay */}

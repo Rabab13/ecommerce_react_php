@@ -17,9 +17,13 @@ class AttributeSetType extends ObjectType
                         'id' => ['type' => Type::id()],
                         'name' => ['type' => Type::string()],
                         'type' => ['type' => Type::string()],
-                        '__typename' => ['type' => Type::string()],
                         'items' => [
                               'type' => Type::listOf($attributeItemType),
+                              'resolve' => fn($attributeSet) => $attributeSet['items'] ?? [],
+                        ],
+                        '__typename' => [
+                              'type' => Type::string(),
+                              'resolve' => fn() => 'AttributeSet',
                         ],
                   ],
             ]);

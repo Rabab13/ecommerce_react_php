@@ -14,20 +14,21 @@ services:
       - PHP_DISPLAY_ERRORS=On
       - PHP_LOG_ERRORS=On
       - PHP_ERROR_LOG=/var/log/php_errors.log
-      - MYSQL_HOST:mysql-qgkp.railway.internal
-      - MYSQL_PORT:3306
-      - MYSQL_DATABASE:railway
-      - MYSQL_USER:root
-      - MYSQL_PASSWORD:hhyqaXpUrzJMBHhoCEddogCNnnaoICJB
-    volumes:
-    
-    - ../.env:/var/www/.env
-    - ../public:/var/www/html/public
-    - ../src:/var/www/src
-    - ../vendor:/var/www/vendor
-    - ../data:/var/www/html/data
+      - MYSQL_HOST=${DB_HOST}
+      - MYSQL_PORT=${DB_PORT}
+      - MYSQL_DATABASE=${DB_DATABASE}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
     env_file:
-    - ../.env
+      - ../.env.docker
+    volumes:
+      - ../public:/var/www/html/public
+      - ../src:/var/www/src
+      - ../vendor:/var/www/vendor
+      - ../data:/var/www/html/data
+      - ../docker/php.ini:/usr/local/etc/php/php.ini 
+
+
 
     depends_on:
       - db
@@ -36,12 +37,15 @@ services:
     image: mysql:5.6
     container_name: mysql56
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: scandiweb_ecommerce
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
     ports:
       - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
+
+
+
 
 volumes:
   db_data:

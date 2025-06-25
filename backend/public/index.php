@@ -2,8 +2,12 @@
 
 use Dotenv\Dotenv;
 
+
+
 // Autoload dependencies first
 require_once __DIR__ . '/../vendor/autoload.php';
+
+
 
 // Load .env config
 $dotenv = Dotenv::createImmutable(__DIR__ . '/..');
@@ -12,10 +16,12 @@ $dotenv->load();
 // Handle CORS
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
 $allowed_origins = [
-      'https://rococo-puppy-56bad8.netlify.app', // Your Netlify frontend URL
-      'http://localhost:5173',                  // Local dev server
-      'https://*.netlify.app',                  // Allow all Netlify preview URLs
+      'https://rococo-puppy-56bad8.netlify.app',
+      'http://localhost:5173',
+      'https://*.netlify.app',
+      'https://8dde-102-41-37-62.ngrok-free.app', // this link may change according to the ngrok tunnel
 ];
+
 
 // Allow any *.netlify.app domain dynamically
 $allow_netlify = preg_match('/^https:\/\/[a-z0-9\-]+\.netlify\.app$/', $origin);
@@ -82,6 +88,7 @@ try {
 
 // Read GraphQL request
 $rawInput = file_get_contents('php://input');
+
 error_log("Raw Input: " . $rawInput);
 
 // Validate we have input
@@ -93,7 +100,7 @@ if (empty($rawInput)) {
       ]);
       exit;
 }
-
+//convert from string to php array   
 $input = json_decode($rawInput, true);
 
 // Validate JSON

@@ -1,55 +1,48 @@
-import ProductCard from '../components/ProductCard';
 import PropTypes from 'prop-types';
+import ProductCard from '../components/ProductCard';
 
-const ProductList = ({ products, onQuickShop }) => {
+const ProductList = ({ products, onQuickShop, category, loading, error }) => {
+  if (loading) return <p>Loading products...</p>;
+  if (error) return <p>Error loading products.</p>;
   if (!products?.length) {
-    return <p>No products available.</p>;
+    return (
+      <>
+        <h1 className="text-2xl mb-5">{category?.toUpperCase() || 'ALL'}</h1>
+        <p>No products available.</p>
+      </>
+    );
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-16 mb-4 mt-16">
-      {products.map((product) => {
-        const productNameKebabCase = product.name
-          .toLowerCase() 
-          .replace(/\s+/g, '-') 
-          .replace(/[^a-z0-9-]/g, ''); 
+    <>
+      <h1 className="font-raleway font-normal text-2xl mb-5">{category?.toUpperCase() || 'ALL'}</h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-16 mb-4 mt-8">
+        {products.map((product) => {
+          const productNameKebabCase = product.name
+            .toLowerCase()
+            .replace(/\s+/g, '-')
+            .replace(/[^a-z0-9-]/g, '');
 
-        return (
-          <ProductCard
-            key={product.id}
-            product={product}
-            onQuickShop={onQuickShop}
-            data-testid={`product-${productNameKebabCase}`} 
-          />
-        );
-      })}
-    </div>
+          return (
+            <ProductCard
+              key={product.id}
+              product={product}
+              onQuickShop={onQuickShop}
+              data-testid={`product-${productNameKebabCase}`}
+            />
+          );
+        })}
+      </div>
+    </>
   );
 };
 
 ProductList.propTypes = {
-  products: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-      name: PropTypes.string.isRequired,
-      prices: PropTypes.arrayOf(
-        PropTypes.shape({
-          amount: PropTypes.number.isRequired,
-          currency: PropTypes.shape({
-            label: PropTypes.string.isRequired,
-            symbol: PropTypes.string.isRequired,
-          }),
-        })
-      ).isRequired,
-      gallery: PropTypes.arrayOf(
-        PropTypes.shape({
-          image_url: PropTypes.string.isRequired,
-        })
-      ).isRequired,
-      inStock: PropTypes.bool.isRequired,
-    })
-  ).isRequired,
+  products: PropTypes.array.isRequired,
   onQuickShop: PropTypes.func.isRequired,
+  category: PropTypes.string,
+  loading: PropTypes.bool,
+  error: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
 };
 
 export default ProductList;

@@ -17,9 +17,14 @@ class PriceType extends ObjectType
                         'currency' => [
                               'type' => new ObjectType([
                                     'name' => 'Currency',
+                                    'description' => 'A currency type used inside Price',
                                     'fields' => [
                                           'label' => ['type' => Type::string()],
                                           'symbol' => ['type' => Type::string()],
+                                          '__typename' => [
+                                                'type' => Type::string(),
+                                                'resolve' => fn() => 'Currency',
+                                          ],
                                     ],
                               ]),
                         ],

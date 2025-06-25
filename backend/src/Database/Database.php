@@ -13,11 +13,11 @@ class Database
       private function __construct()
       {
             // Fetch environment variables
-            $host = getenv('MYSQL_HOST');
-            $port = getenv('MYSQL_PORT');
-            $dbname = getenv('MYSQL_DATABASE');
-            $username = getenv('MYSQL_USER');
-            $password = getenv('MYSQL_PASSWORD');
+            $host = getenv('DB_HOST');
+            $port = getenv('DB_PORT');
+            $dbname = getenv('DB_DATABASE');
+            $username = getenv('DB_USER');
+            $password = getenv('DB_PASSWORD');
 
             // Validate required environment variables
             if (!$host || !$port || !$dbname || !$username || !$password) {

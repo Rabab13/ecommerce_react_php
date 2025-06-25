@@ -11,7 +11,7 @@ class OrderItemAttributeInputType extends InputObjectType
       public function __construct()
       {
             parent::__construct([
-                  'name' => 'OrderItemAttributeInput',  // Matches the input type name in the schema
+                  'name' => 'OrderItemAttributeInput',
                   'fields' => [
                         'name' => [
                               'type' => Type::nonNull(Type::string()),

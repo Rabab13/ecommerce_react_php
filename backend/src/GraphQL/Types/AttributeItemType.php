@@ -16,7 +16,10 @@ class AttributeItemType extends ObjectType
                         'id' => ['type' => Type::id()],
                         'value' => ['type' => Type::string()],
                         'displayValue' => ['type' => Type::string()],
-                        '__typename' => ['type' => Type::string()],
+                        '__typename' => [
+                              'type' => Type::string(),
+                              'resolve' => fn() => 'AttributeItem',
+                        ],
                   ],
             ]);
       }

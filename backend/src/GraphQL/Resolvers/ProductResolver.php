@@ -12,14 +12,21 @@ class ProductResolver
       {
             $this->productModel = $productModel;
       }
-
+      //Find a product by ID
+      public function resolveProduct($root, array $args, $context, $info): ?array
+      {
+            try {
+                  $id = $args['id'];
+                  return $this->productModel->findById($id);
+            } catch (\Exception $e) {
+                  error_log("Error fetching product: " . $e->getMessage());
+                  return null;
+            }
+      }
       public function resolveProducts($root, array $args, $context, $info): array
       {
             try {
-                  $products = $this->productModel->findAll();
-                  error_log("Fetched products: " . print_r($products, true));
-
-                  return $products ?? [];
+                  return $this->productModel->findAll() ?? [];
             } catch (\Exception $e) {
                   error_log("Error fetching products: " . $e->getMessage());
                   return [];
@@ -31,20 +38,27 @@ class ProductResolver
             $categoryId = $args['categoryId'] ?? null;
             $categoryName = $args['categoryName'] ?? null;
 
-            error_log("Fetching products for category ID: $categoryId and category name: $categoryName");
-
             try {
-                  if ($categoryId === null || strtolower($categoryName) === 'all') {
-                        $products = $this->productModel->findAll();
-                  } else {
-                        $products = $this->productModel->getByCategoryId($categoryId);
+                  if ($categoryId) {
+                        return $this->productModel->getByCategoryId($categoryId);
+                  } elseif ($categoryName && strtolower($categoryName) !== 'all') {
+                        return $this->productModel->getByCategoryName($categoryName);
                   }
-                  error_log("Fetched products: " . print_r($products, true));
-
-                  return $products ?? [];
+                  return $this->productModel->findAll() ?? [];
             } catch (\Exception $e) {
-                  error_log("Error fetching products: " . $e->getMessage());
+                  error_log("Error fetching products by category: " . $e->getMessage());
                   return [];
+            }
+      }
+
+      public function resolveProductById($root, array $args): ?array
+      {
+            try {
+                  $id = (string)$args['id']; // Ensure ID is treated as string
+                  return $this->productModel->findById($id);
+            } catch (\Exception $e) {
+                  error_log("Error fetching product by ID: " . $e->getMessage());
+                  return null;
             }
       }
 }

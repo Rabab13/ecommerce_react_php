@@ -1,7 +1,0 @@
-{
-      "build": {
-        "dockerfilePath": "backend/docker/apache/Dockerfile"
-      }
-      
-    }
-    
