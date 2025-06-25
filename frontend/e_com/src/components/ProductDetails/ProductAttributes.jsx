@@ -1,35 +1,30 @@
 import PropTypes from 'prop-types';
 
 const ProductAttributes = ({ attributes, selectedAttributes, onSelectAttribute }) => {
-  const createTestId = (base, value = '', isSelected = false) => {
-    const cleanBase = base.toLowerCase().replace(/\s+/g, '-');
-    const cleanValue = value.toLowerCase().replace(/\s+/g, '-');
-    return `product-attribute-${cleanBase}${value ? `-${cleanValue}` : ''}${isSelected ? '-selected' : ''}`;
-  };
-
   return (
     <div className="space-y-4">
       {attributes.map((attr) => {
-        const attributeTestId = createTestId(attr.name);
+        const kebab = attr.name.toLowerCase().replace(/\s+/g, '-');
 
         return (
-          <div key={attr.id} data-testid={attributeTestId}>
+          <div key={attr.id} data-testid={`product-attribute-${kebab}`}>
             <h3 className="font-roboto-condensed font-bold uppercase">{attr.name}:</h3>
             <div className="text-lg font-roboto-condensed p-1 flex gap-2 flex-wrap">
               {attr.items.map((item) => {
                 const isSelected = selectedAttributes[attr.id] === item.id;
-                const itemTestId = createTestId(attr.name, item.value, isSelected);
 
-                if (attr.name.toLowerCase() === 'color') {
+                if (attr.name === 'Color') {
                   return (
                     <div
                       key={item.id}
                       onClick={() => onSelectAttribute(attr.id, item.id)}
                       className="relative w-9 h-9 cursor-pointer"
-                      data-testid={itemTestId}
+                      data-testid={`product-attribute-${kebab}-${item.value}${
+                        isSelected ? '-selected' : ''
+                      }`}
                     >
                       <div
-                        className={`absolute inset-0 rounded-sm border ${
+                        className={`absolute    inset-0 rounded-sm border ${
                           isSelected ? 'border-[#5ECE7B]' : 'border-transparent'
                         }`}
                       />
@@ -52,7 +47,7 @@ const ProductAttributes = ({ attributes, selectedAttributes, onSelectAttribute }
                       className={`border w-[63px] h-[45px] ${
                         isSelected ? 'bg-black text-white' : 'bg-white text-black'
                       }`}
-                      data-testid={itemTestId}
+                      data-testid={`product-attribute-${kebab}-${item.value}`}
                     >
                       {item.value}
                     </button>
