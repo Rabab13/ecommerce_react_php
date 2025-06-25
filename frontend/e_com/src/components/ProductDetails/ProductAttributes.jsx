@@ -7,7 +7,7 @@ const ProductAttributes = ({ attributes, selectedAttributes, onSelectAttribute }
         const kebab = attr.name.toLowerCase().replace(/\s+/g, '-');
 
         return (
-          <div key={attr.id}>
+          <div key={attr.id} data-testid={`product-attribute-${kebab}`}>
             <h3 className="font-roboto-condensed font-bold uppercase">{attr.name}:</h3>
             <div className="text-lg font-roboto-condensed p-1 flex gap-2 flex-wrap">
               {attr.items.map((item) => {
@@ -24,7 +24,7 @@ const ProductAttributes = ({ attributes, selectedAttributes, onSelectAttribute }
                       }`}
                     >
                       <div
-                        className={`absolute inset-0 rounded-sm border ${
+                        className={`absolute    inset-0 rounded-sm border ${
                           isSelected ? 'border-[#5ECE7B]' : 'border-transparent'
                         }`}
                       />

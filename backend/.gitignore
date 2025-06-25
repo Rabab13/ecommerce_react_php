@@ -33,7 +33,7 @@ docker-compose.prod.yml
 .env
 .env.docker 
 # Composer dependencies
-vendor/
+/vendor/
 
 
 
