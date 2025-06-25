@@ -9,10 +9,10 @@ const AddToCartButton = ({
 
   return (
     <button
-      data-testid="add-to-cart" 
-      aria-disabled={isDisabled} 
       onClick={onAddToCart}
-      disabled={isDisabled}
+      {...(isDisabled ? { disabled: true } : {})}
+      data-testid="add-to-cart"
+      aria-disabled={isDisabled}
       className={`font-raleway font-semibold text-[16px] leading-[120%] text-center uppercase flex items-center justify-center w-full md:w-72 py-3 text-white transition-all duration-200 ${
         isDisabled
           ? 'bg-gray-400 cursor-not-allowed'
