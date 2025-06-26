@@ -2,8 +2,20 @@ import PropTypes from 'prop-types';
 import ProductCard from '../components/ProductCard';
 
 const ProductList = ({ products, onQuickShop, category, loading, error }) => {
-  if (loading) return <p>Loading products...</p>;
-  if (error) return <p>Error loading products.</p>;
+  if (loading) {
+  return (
+    <div className="flex justify-center items-center h-48">
+      <span className="text-lg text-gray-600 animate-pulse">Loading products...</span>
+    </div>
+  );
+}
+if (error) {
+  return (
+    <div className="flex justify-center items-center h-48">
+      <span className="text-red-600 text-lg">Error loading products.</span>
+    </div>
+  );
+}
   if (!products?.length) {
     return (
       <>

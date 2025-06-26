@@ -56,12 +56,24 @@ const ProductDetails = ({ onAddToCart, setActiveCategory }) => {
 
     onAddToCart(productToAdd);
   };
+  if (loading) {
+  return (
+    <div className="flex justify-center items-center h-48">
+      <span className="text-lg text-gray-600 animate-pulse">Loading product...</span>
+    </div>
+  );
+}
+if (error) {
+  return (
+    <div className="flex justify-center items-center h-48">
+      <span className="text-red-600 text-lg">Product not found.</span>
+    </div>
+  );
+}
 
-  if (loading) return <p>Loading product...</p>;
-  if (error || !selectedProduct) return <p>Product not found.</p>;
 
   return (
-    <div className="flex justify-center items-center p-5 mt-10">
+    <div className="flex justify-center mx-auto items-center p-5 mt-10">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-28 bg-white w-full max-w-7xl mx-auto pt-5">
         <ProductGallery gallery={selectedProduct.gallery} />
         

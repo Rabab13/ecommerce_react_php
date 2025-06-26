@@ -1,22 +1,12 @@
 <?php
-// src/GraphQL/Schema.php
 
 namespace App\GraphQL;
 
 use GraphQL\Type\Schema as GraphQLSchema;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
-use App\GraphQL\Resolvers\CategoryResolver;
-use App\GraphQL\Resolvers\ProductResolver;
-use App\GraphQL\Resolvers\OrderResolver;
-use App\GraphQL\Types\AttributeSetType;
-use App\GraphQL\Types\AttributeItemType;
-use App\GraphQL\Types\CategoryType;
-use App\GraphQL\Types\ProductType;
-use App\GraphQL\Types\InsertOrderInputType;
-use App\GraphQL\Types\OrderType;
-use App\Models\Category;
 use App\Models\Product;
+use App\Models\Category;
 use App\Models\Order;
 use PDO;
 
@@ -24,77 +14,112 @@ class Schema
 {
       public static function create(PDO $db): GraphQLSchema
       {
-
-            $categoryModel = new Category($db);
             $productModel = new Product($db);
+            $categoryModel = new Category($db);
             $orderModel = new Order($db);
 
-            $categoryResolver = new CategoryResolver($categoryModel);
-            $productResolver = new ProductResolver($productModel);
-            $orderResolver = new OrderResolver($orderModel);
+            // === Define Types ===
+            $categoryType = new ObjectType([
+                  'name' => 'Category',
+                  'fields' => [
+                        'id' => Type::id(),
+                        'name' => Type::string(),
+                  ],
+            ]);
 
+            $productType = new ObjectType([
+                  'name' => 'Product',
+                  'fields' => [
+                        'id' => Type::id(),
+                        'name' => Type::string(),
+                        'price' => Type::float(),
+                        'category_id' => Type::id(),
+                  ],
+            ]);
 
-            $categoryType = new CategoryType();
-            $attributeItemType = new AttributeItemType();
-            $attributeSetType = new AttributeSetType($attributeItemType);
-            $productType = new ProductType($categoryType, $attributeSetType,  $productModel);
-            $insertOrderInputType = new InsertOrderInputType();
-            $orderType = new OrderType();
+            $orderType = new ObjectType([
+                  'name' => 'Order',
+                  'fields' => [
+                        'id' => Type::id(),
+                        'product_id' => Type::id(),
+                        'quantity' => Type::int(),
+                        'total' => Type::float(),
+                  ],
+            ]);
 
+            $insertOrderInputType = new ObjectType([
+                  'name' => 'InsertOrderInput',
+                  'fields' => [
+                        'product_id' => Type::nonNull(Type::id()),
+                        'quantity' => Type::nonNull(Type::int()),
+                  ],
+            ]);
 
+            // === Define Query ===
             $queryType = new ObjectType([
                   'name' => 'Query',
-                  'fields' => function () use (
-                        $categoryType,
-                        $productType,
-                        $productResolver,
-                        $categoryResolver
-                  ) {
-                        return [
-                              'categories' => [
-                                    'type' => Type::listOf($categoryType),
-                                    'resolve' => [$categoryResolver, 'resolveCategories'],
+                  'fields' => [
+                        'categories' => [
+                              'type' => Type::listOf($categoryType),
+                              'resolve' => fn() => $categoryModel->findAll() ?? [],
+                        ],
+                        'products' => [
+                              'type' => Type::listOf($productType),
+                              'resolve' => fn() => $productModel->findAll() ?? [],
+                        ],
+                        'productsByCategory' => [
+                              'type' => Type::listOf($productType),
+                              'args' => [
+                                    'categoryId' => ['type' => Type::id()],
+                                    'categoryName' => ['type' => Type::string()],
                               ],
-                              'products' => [
-                                    'type' => Type::listOf($productType),
-                                    'resolve' => [$productResolver, 'resolveProducts'],
+                              'resolve' => function ($root, $args) use ($productModel) {
+                                    if (!empty($args['categoryId'])) {
+                                          return $productModel->getByCategoryId($args['categoryId']);
+                                    }
+                                    if (!empty($args['categoryName']) && strtolower($args['categoryName']) !== 'all') {
+                                          return $productModel->getByCategoryName($args['categoryName']);
+                                    }
+                                    return $productModel->findAll();
+                              },
+                        ],
+                        'product' => [
+                              'type' => $productType,
+                              'args' => [
+                                    'id' => Type::nonNull(Type::id()),
                               ],
-                              'productsByCategory' => [
-                                    'type' => Type::listOf($productType),
-                                    'args' => [
-                                          'categoryId' => ['type' => Type::id()],
-                                          'categoryName' => ['type' => Type::string()],
-                                    ],
-                                    'resolve' => [$productResolver, 'resolveProductsByCategory'],
-                              ],
-                              'product' => [
-                                    'type' => $productType,
-                                    'args' => [
-                                          'id' => Type::nonNull(Type::id()),
-                                    ],
-                                    'resolve' => function ($root, $args, $context, $info) use ($productResolver) {
-                                          return $productResolver->resolveProduct($root, $args, $context, $info);
-                                    },
-                              ],
-                        ];
-                  },
+                              'resolve' => fn($root, $args) => $productModel->findById($args['id']),
+                        ],
+                  ],
             ]);
 
+            // === Define Mutation ===
             $mutationType = new ObjectType([
                   'name' => 'Mutation',
-                  'fields' => function () use ($orderType, $insertOrderInputType, $orderResolver) {
-                        return [
-                              'insertOrder' => [
-                                    'type' => $orderType,
-                                    'args' => [
-                                          'input' => Type::nonNull($insertOrderInputType),
+                  'fields' => [
+                        'insertOrder' => [
+                              'type' => $orderType,
+                              'args' => [
+                                    'input' => [
+                                          'type' => Type::nonNull(
+                                                new ObjectType([
+                                                      'name' => 'OrderInput',
+                                                      'fields' => [
+                                                            'product_id' => Type::nonNull(Type::id()),
+                                                            'quantity' => Type::nonNull(Type::int()),
+                                                      ],
+                                                ])
+                                          ),
                                     ],
-                                    'resolve' => [$orderResolver, 'resolveInsertOrder'],
                               ],
-                        ];
-                  },
+                              'resolve' => function ($root, $args) use ($orderModel) {
+                                    $input = $args['input'];
+                                    $orderId = $orderModel->insert($input);
+                                    return $orderId ? $orderModel->findById($orderId) : null;
+                              },
+                        ],
+                  ],
             ]);
-
 
             return new GraphQLSchema([
                   'query' => $queryType,

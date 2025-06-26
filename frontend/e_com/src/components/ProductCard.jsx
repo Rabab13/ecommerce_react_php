@@ -75,6 +75,7 @@ const ProductCard = ({ product, onQuickShop }) => {
           <button
             onClick={handleQuickShop}
             className="font-raleway absolute -bottom-6 right-0 bg-green-500 text-white p-3 rounded-full shadow-lg hover:bg-green-600 transition z-20"
+            type="button"
             aria-label="Add to Cart"
           >
             <svg
