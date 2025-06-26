@@ -1,20 +1,14 @@
 import  { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 
 const ProductCard = ({ product, onQuickShop }) => {
   const {id, name, prices, gallery, inStock, attributes } = product;
   const [isHovered, setIsHovered] = useState(false);
-  const navigate = useNavigate();
 
   if (!product) {
     return null; 
   }
-
-  const handleClick = () => {
-    navigate(`/product/${product.id}`);
-  };
 
   // Function to get default attributes
   const getDefaultAttributes = () => {
@@ -60,7 +54,6 @@ const ProductCard = ({ product, onQuickShop }) => {
       className="font-raleway relative p-4 w-[386px] h-[444px] bg-white hover:shadow-[0_4px_12px_rgba(0,0,0,0.1)] transition-transform transform hover:scale-105"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={handleClick}
     >
       <div className="relative overflow-visible">
         {/* Image with gray overlay for out-of-stock products */}
@@ -81,7 +74,7 @@ const ProductCard = ({ product, onQuickShop }) => {
         {isHovered && inStock && (
           <button
             onClick={handleQuickShop}
-            className="absolute -bottom-6 right-0 bg-green-500 text-white p-3 rounded-full shadow-lg hover:bg-green-600 transition z-20"
+            className="font-raleway absolute -bottom-6 right-0 bg-green-500 text-white p-3 rounded-full shadow-lg hover:bg-green-600 transition z-20"
             aria-label="Add to Cart"
           >
             <svg
@@ -104,10 +97,10 @@ const ProductCard = ({ product, onQuickShop }) => {
 
       <div className="font-raleway mt-5 flex justify-between items-center">
         <div className="text-left">
-          <h3 className="font-light text-md font-medium text-gray-800">{name}</h3>
+          <h3 className="font-light text-md font-medium text-gray-700">{name}</h3>
           {/* Price with gray overlay for out-of-stock products */}
           <div className={`${!inStock ? 'bg-gray-50 bg-opacity-70' : ''}`}>
-            <p className={`font-normal text-lg  ${!inStock ? 'text-gray-500' : ''}`}>
+            <p className={`font-normal font-raleway text-lg  ${!inStock ? 'text-gray-500' : ''}`}>
               {prices?.[0]?.amount ? `$${prices[0].amount.toFixed(2)}` : 'N/A'}
             </p>
           </div>
