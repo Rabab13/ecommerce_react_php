@@ -27,7 +27,7 @@ const Header = ({
   const normalizedActiveCategory = activeCategory.toLowerCase();
 
   return (
-    <header className="w-full bg-white fixed  top-0 left-0 z-50">
+    <header className="w-full bg-white fixed  top-0 left-0 z-50 shadow-sm">
       <div className="max-w-7xl mx-auto h-20 px-4  bg-pt-2 flex items-center justify-between relative">
         <nav className="flex space-x-4  sm:space-x-8">
           {/* ALL link */}
