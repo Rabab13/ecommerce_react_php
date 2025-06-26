@@ -16,14 +16,6 @@ if (error) {
     </div>
   );
 }
-  // if (!products?.length) {
-  //   return (
-  //     <>
-  //       <h1 className="text-2xl mb-5">{category?.toUpperCase() || 'ALL'}</h1>
-  //       <p>No products available.</p>
-  //     </>
-  //   );
-  // }
 
   return (
     <>
