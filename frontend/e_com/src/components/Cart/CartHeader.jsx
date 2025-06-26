@@ -5,7 +5,7 @@ const CartHeader = ({
   onClose 
 }) => {
   return (
-    <div className="font-raleway flex justify-between items-center mb-10">
+    <div className="font-raleway flex justify-between items-center">
         <h2 className="text-xl">
     <span className="text-base font-bold">My Bag</span>
     {`, `}
