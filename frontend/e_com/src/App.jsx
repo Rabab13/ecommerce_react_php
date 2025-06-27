@@ -14,9 +14,10 @@ const App = () => {
   const [activeCategory, setActiveCategory] = useState('all');
   const [cartItems, setCartItems] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const isOnProductDetailsPage = location.pathname.startsWith('/product/');
 
   // Fetch categories
-  const { data: categoriesData } = useQuery(GET_CATEGORIES,
+  const { loading: categoriesLoading, error: categoriesError, data: categoriesData } = useQuery(GET_CATEGORIES,
     {fetchPolicy: 'network-only',}
   );
 
@@ -38,6 +39,7 @@ const App = () => {
     setCartItems(JSON.parse(storedCart));
   }
 }, []);
+
 
 
  useEffect(() => {
@@ -87,6 +89,21 @@ const App = () => {
     }
   };
 
+  if (!isOnProductDetailsPage && (categoriesLoading || productsLoading)) {
+  return (
+    <div className="flex items-center justify-center h-screen">
+      <p className="text-xl animate-pulse">Loading...</p>
+          </div>
+  );
+}
+  
+if (!isOnProductDetailsPage && (categoriesError || productsError)) {
+  return (
+    <div className="flex items-center justify-center h-screen">
+      <p className="text-xl text-red-500">Error loading data. Please try again later.</p>
+       </div>
+  );
+}
 
   const products = productsData?.productsByCategory || [];
   const categories = categoriesData?.categories || [];
@@ -125,8 +142,6 @@ const App = () => {
       element={
         <ProductList
           products={products}
-          loading={productsLoading}
-          error={productsError}
           onQuickShop={handleAddToCart}
           category={category.name}
         />
