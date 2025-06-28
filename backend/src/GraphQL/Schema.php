@@ -101,15 +101,7 @@ class Schema
                               'type' => $orderType,
                               'args' => [
                                     'input' => [
-                                          'type' => Type::nonNull(
-                                                new ObjectType([
-                                                      'name' => 'OrderInput',
-                                                      'fields' => [
-                                                            'product_id' => Type::nonNull(Type::id()),
-                                                            'quantity' => Type::nonNull(Type::int()),
-                                                      ],
-                                                ])
-                                          ),
+                                          'type' => Type::nonNull($insertOrderInputType),
                                     ],
                               ],
                               'resolve' => function ($root, $args) use ($orderModel) {
