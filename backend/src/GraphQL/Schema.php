@@ -4,6 +4,7 @@ namespace App\GraphQL;
 
 use GraphQL\Type\Schema as GraphQLSchema;
 use GraphQL\Type\Definition\ObjectType;
+use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\Type;
 use App\Models\Product;
 use App\Models\Category;
@@ -47,7 +48,7 @@ class Schema
                   ],
             ]);
 
-            $insertOrderInputType = new ObjectType([
+            $insertOrderInputType = new InputObjectType(([
                   'name' => 'InsertOrderInput',
                   'fields' => [
                         'product_id' => Type::nonNull(Type::id()),
