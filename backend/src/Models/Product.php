@@ -14,18 +14,21 @@ class Product extends BaseModel implements ModelInterface
         parent::__construct($db);
     }
 
-
     public function findAll(): ?array
     {
         try {
             $stmt = $this->db->prepare("SELECT * FROM {$this->table}");
             $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            $products = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+
+            return $products;
         } catch (PDOException $e) {
             $this->logError("Error fetching all products: " . $e->getMessage());
             return null;
         }
     }
+
+
 
     public function findById($id): ?array
     {
@@ -34,7 +37,11 @@ class Product extends BaseModel implements ModelInterface
             $stmt = $this->db->prepare($query);
             $stmt->bindParam(':id', $id, PDO::PARAM_STR);
             $stmt->execute();
-            return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+            $product = $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+            if ($product && isset($product['in_stock'])) {
+                $product['inStock'] = (bool)$product['in_stock'];
+            }
+            return $product;
         } catch (PDOException $e) {
             $this->logError("Error fetching product by ID: " . $e->getMessage());
             return null;
@@ -111,31 +118,45 @@ class Product extends BaseModel implements ModelInterface
     }
 
 
-    public function getAttributesByProductId($productId): array
+    public function getAttributesByProductId(string $productId): array
     {
-        $query = "
-        SELECT a.id, a.name, a.type
-        FROM attributes a
-        JOIN product_attributes pa ON pa.attribute_id = a.id
-        WHERE pa.product_id = :productId
-    ";
+        try {
+            $sql = "SELECT aset.id, aset.name, aset.type, aset.__typename, ai.id AS item_id, ai.value, ai.display_value, ai.__typename AS item_typename
+                    FROM attribute_sets aset
+                    JOIN attribute_items ai ON aset.id = ai.attribute_set_id
+                    WHERE aset.product_id = :product_id";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute(['product_id' => $productId]);
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':productId', $productId);
-        $stmt->execute();
-        $attributes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $attributeSets = [];
+            foreach ($results as $row) {
+                $attributeSetId = $row['id'];
+                if (!isset($attributeSets[$attributeSetId])) {
+                    $attributeSets[$attributeSetId] = [
+                        'id' => $row['id'],
+                        'name' => $row['name'],
+                        'type' => $row['type'],
+                        '__typename' => $row['__typename'],
+                        'items' => [],
+                    ];
+                }
+                $attributeSets[$attributeSetId]['items'][] = [
+                    'id' => $row['item_id'],
+                    'value' => $row['value'],
+                    'displayValue' => $row['display_value'],
+                    '__typename' => $row['item_typename'],
+                ];
+            }
 
-        // Fetch attribute items for each attribute
-        foreach ($attributes as &$attribute) {
-            $attrId = $attribute['id'];
-            $itemsStmt = $this->db->prepare("SELECT id, value, displayValue FROM attribute_items WHERE attribute_id = :attrId");
-            $itemsStmt->bindParam(':attrId', $attrId);
-            $itemsStmt->execute();
-            $attribute['items'] = $itemsStmt->fetchAll(PDO::FETCH_ASSOC);
+            return array_values($attributeSets);
+        } catch (\Exception $e) {
+            error_log("Error fetching attribute sets for product $productId: " . $e->getMessage());
+            return [];
         }
-
-        return $attributes;
     }
+
+
 
     public function getPricesByProductId(string $productId): array
     {

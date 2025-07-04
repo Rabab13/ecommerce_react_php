@@ -77,7 +77,7 @@ const CartOverlay = ({
   }, [onClose]);
 
   return (
-    <div className="font-raleway  absolute top-8 right-1 sm:right-2 md:right-4 lg:right-20 right-4 w-80 bg-white p-2 pt-14 shadow-xl z-50 " ref={cartOverlayRef}>
+    <div className="font-raleway  absolute top-8 right-1 sm:right-2 md:right-4 lg:right-60 right-4 w-80 bg-white p-2 pt-14 shadow-xl z-50 " ref={cartOverlayRef}>
       <CartHeader totalItems={totalItems} onClose={onClose} />
       
       <div className="max-h-96 overflow-y-auto">

@@ -19,7 +19,7 @@ $allowed_origins = [
       'https://rococo-puppy-56bad8.netlify.app',
       'http://localhost:5173',
       'https://*.netlify.app',
-      'https://8dde-102-41-37-62.ngrok-free.app', // this link may change according to the ngrok tunnel
+      'https://65e8-196-134-108-13.ngrok-free.app', // this link may change according to the ngrok tunnel
 ];
 
 
@@ -39,6 +39,7 @@ if (empty($origin) || in_array($origin, $allowed_origins, true) || $allow_netlif
 // Required headers
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
+
 
 // Handle preflight request
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {

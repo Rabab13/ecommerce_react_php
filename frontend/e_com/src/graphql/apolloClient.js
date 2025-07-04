@@ -2,7 +2,7 @@ import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 
 const httpLink = createHttpLink({
-  uri: 'https://ecommercereactphp-production.up.railway.app/graphql',
+  uri: 'http://localhost:8000/',
   useGETForQueries: false,
   fetchOptions: {
     method: 'POST'
@@ -10,7 +10,7 @@ const httpLink = createHttpLink({
 });
 
 const authLink = setContext((_, { headers }) => {
-  const token = localStorage.getItem('authToken'); // Ensure authentication if needed
+  const token = localStorage.getItem('authToken'); 
   return {
     headers: {
       ...headers,

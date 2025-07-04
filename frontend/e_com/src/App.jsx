@@ -89,6 +89,8 @@ const App = () => {
     }
   };
 
+
+  
   if (!isOnProductDetailsPage && (categoriesLoading || productsLoading)) {
   return (
     <div className="flex items-center justify-center h-screen">
@@ -107,6 +109,7 @@ if (!isOnProductDetailsPage && (categoriesError || productsError)) {
 
   const products = productsData?.productsByCategory || [];
   const categories = categoriesData?.categories || [];
+
 
   return (
     <div className="App">
