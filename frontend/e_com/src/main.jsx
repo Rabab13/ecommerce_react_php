@@ -18,7 +18,7 @@ import '@fontsource/source-sans-pro/600.css';
 import '@fontsource/source-sans-pro/700.css';
 
 const client = new ApolloClient({
-  uri: 'https://e07c-196-128-130-235.ngrok-free.app', 
+  uri: 'https://062d144cb85a.ngrok-free.app', 
   cache: new InMemoryCache(),
 });
 
