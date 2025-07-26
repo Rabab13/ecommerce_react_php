@@ -49,7 +49,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 // Handle GET requests with helpful message
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-      header('Content-Type: application/json');
+      header('Content-Type: application/json; charset=utf-8');
+      mb_internal_encoding("UTF-8");
       echo json_encode([
             'message' => 'Welcome to the GraphQL API',
             'instructions' => [
@@ -152,7 +153,8 @@ try {
 
 // Output JSON response
 header('Content-Type: application/json');
-echo json_encode($output);
+echo json_encode($output, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+
 
 // Close DB connection (optional)
 $db = null;

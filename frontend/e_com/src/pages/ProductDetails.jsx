@@ -12,11 +12,14 @@ import ProductDescription from '../components/ProductDetails/ProductDescription'
 const ProductDetails = ({ onAddToCart, setActiveCategory }) => {
   const { id } = useParams();
   const [selectedAttributes, setSelectedAttributes] = useState({});
+  // console.log('Fetching product with ID:', id);
 
   const { data, loading, error } = useQuery(GET_PRODUCT_BY_ID, {
     variables: { id },
+    fetchPolicy: 'cache-and-network',
   });
 
+  
   const selectedProduct = data?.product;
 
   useEffect(() => {

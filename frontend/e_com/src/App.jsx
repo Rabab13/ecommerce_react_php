@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import Header from './pages/Header';
 import ProductList from './pages/ProductList';
@@ -14,7 +14,8 @@ const App = () => {
   const [activeCategory, setActiveCategory] = useState('all');
   const [cartItems, setCartItems] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const isOnProductDetailsPage = location.pathname.startsWith('/product/');
+  const isOnProductDetailsPage = useMemo(() => location.pathname.startsWith('/product/'), [location.pathname]);
+
 
   // Fetch categories
   const { loading: categoriesLoading, error: categoriesError, data: categoriesData } = useQuery(GET_CATEGORIES,
@@ -29,7 +30,7 @@ const App = () => {
       categoryName: activeCategory === 'all' ? null : activeCategory,
       fetchPolicy: 'network-only',
     },
-    skip: !categoriesData,
+    skip: !categoriesData || isOnProductDetailsPage,
   });
 
   // Load/save cart items from/to local storage
@@ -157,7 +158,6 @@ if (!isOnProductDetailsPage && (categoriesError || productsError)) {
       <ProductDetails
         setActiveCategory={setActiveCategory}
         onAddToCart={handleAddToCart}
-        products={products}
       />
     }
   />

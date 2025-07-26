@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import ProductCard from '../components/ProductCard';
 
 const ProductList = ({ products, onQuickShop, category, loading, error }) => {
-  console.log(products )
+  // console.log(products )
   if (loading) {
   return (
     <div className="flex justify-center items-center h-48">

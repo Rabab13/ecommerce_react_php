@@ -1,8 +1,7 @@
-// src/main.jsx
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
-import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
+import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink } from '@apollo/client';
 import App from './App';
 import './index.css';
 import '@fontsource/raleway/400.css';
@@ -17,17 +16,26 @@ import '@fontsource/source-sans-pro/400.css';
 import '@fontsource/source-sans-pro/600.css'; 
 import '@fontsource/source-sans-pro/700.css';
 
+
+const httpLink = createHttpLink({
+  uri: 'https://0e81b8938bfc.ngrok-free.app',
+  headers: {
+    'Content-Type': 'application/json', 
+  }
+});
+
+
 const client = new ApolloClient({
-  uri: 'https://65e8-196-134-108-13.ngrok-free.app', 
+  link: httpLink, 
   cache: new InMemoryCache(),
 });
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <ApolloProvider client={client}>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
     </ApolloProvider>
   </React.StrictMode>
 );
